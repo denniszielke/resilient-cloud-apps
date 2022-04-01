@@ -1,0 +1,10 @@
+node_modules/
+jspm_packages/
+
+**/package-lock.json
+
+**/bin/
+**/obj/
+
+***/appsettings.Development.json
+***/launch_my.json

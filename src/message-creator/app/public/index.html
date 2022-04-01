@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Device simulator</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="angular.min.js"></script>
+    <script src="client.js"></script>
+    <script src="jquery-3.1.1.slim.min.js"></script>
+    <script src="modernizr-custom.js"></script>
+    <script type="text/javascript" src="https://js.monitor.azure.com/scripts/b/ai.2.min.js"></script>
+</head>
+<body class="site" ng-app="SimulatorApp" ng-controller="SimulatorController">
+    <div class="jumbotron">
+        <div class="container">
+            <h2 class="display-5">Hello Device <b>{{name}}</b></h2>
+            <p>{{version}}</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="starter-template">
+            <div class="btn-group">
+                <form>
+                    <p>
+                        <label for="lookTemperature">Temperature: {{ temperature }}</label>
+                        <input type="range" ng-model="temperature" min="0" max="100" value="10" step="2" width="200">                        
+                    </p>
+                    <p>
+                        <label for="lookhumidity">Humidity: {{ humidity }}</label>
+                        <input type="range" ng-model="humidity" min="0" max="100" value="10" step="2" width="200">
+                    </p>
+                    <p>
+                        <label for="instancename" style="width:200px">Message:</label>
+                        <input type="text" ng-model="message" maxlength="16" value="azureuser" width="300">
+                    </p>
+                    <!-- <p>
+                        <button class="btn btn-lg btn-success" ng-click="SendStatus(0)" type="button" id="Status0" value="Send Status 0">Send Status 0</button>
+                        <button class="btn btn-lg btn-success" ng-click="SendStatus(1)" type="button" id="Status1" value="Send Status 1">Send Status 1</button>
+                    </p> -->
+                    <p>
+                        <label>
+                        <input type="checkbox" ng-model="loop" value"loop" checked="true" name="loop">keep posting in a loop</input>
+                    </label><br/>
+                    <label>
+                        <input type="checkbox" ng-model="random" value"random" checked="true" name="random">random value</input>
+
+                        </label><br/>
+                        <button class="btn btn-lg btn-success" ng-click="InvokeRequest()" type="button" id="InvokeRequest" value="Invoke Request">Invoke Request</button>
+                        <button class="btn btn-lg btn-success" ng-click="PublishMessage()" type="button" id="PublishMessage" value="Publish Message">Publish Message</button>
+                    </p>
+                </form>
+                <div class="row">
+                    <h2>Result</h2>
+                    <p class="bg-info">{{ result }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+    <script type="text/javascript">
+    function initAppInsights(insightsKey){
+        var snippet = {
+            config: {
+                instrumentationKey: insightsKey
+            }
+        };
+        var init = new Microsoft.ApplicationInsights.ApplicationInsights(snippet);
+        var appInsights = init.loadAppInsights();
+        appInsights.trackPageView();
+    }
+    </script>
+</body>
+</html>

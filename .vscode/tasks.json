@@ -1,0 +1,45 @@
+// lsof -nP -iTCP -sTCP:LISTEN | grep 9092
+// kill -9 $(lsof -t -i:"9092")  
+// lsof -nP -iTCP -sTCP:LISTEN | grep 9093
+// kill -9 $(lsof -t -i:"9093")  
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-all",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

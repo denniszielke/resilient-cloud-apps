@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-creator-app
+  labels:
+    app: message-creator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-creator
+  template:
+    metadata:
+      labels:
+        app: message-creator
+    spec:
+      containers:
+      - name: message-creator
+        image: ghcr.io/denniszielke/reliable-apps/message-creator:main
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        env: 
+          - name: "PORT"
+            value: "80"

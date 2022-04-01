@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-receiver-app
+  labels:
+    app: message-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-receiver
+  template:
+    metadata:
+      labels:
+        app: message-receiver
+    spec:
+      containers:
+      - name: message-receiver
+        image: ghcr.io/denniszielke/reliable-apps/message-receiver:main
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        env: 
+          - name: "PORT"
+            value: "80"

@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // https://docs.dapr.io/operations/hosting/self-hosted/self-hosted-no-docker/
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "All",
+            "configurations": [ "Creator", "Receiver"],
+            "preLaunchTask": "build-all",
+            "stopAll": true
+        }
+    ],
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Creator",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/src/message-creator/app/app.js",
+            "env": {
+                "EVENTHUB_CONNECTIONSTRING": "Endpoint=sb:/",
+                "EVENTHUB_NAME": "events",
+                "INSTRUMENTATIONKEY": "InstrumentationKey=",
+                "INVOCATION_URL": "http://localhost:5025/api/message/receive",
+                "VERSION": "dev version"
+            }
+        },        
+        {
+            "name": "Receiver",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-all",
+            "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Message.Receiver",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ApplicationInsights:ConnectionString": "InstrumentationKey=",
+                "EventHub:EventHubConnectionString": "Endpoint=sb://",
+                "EventHub:EventHubName": "events",
+                "EventHub:BlobConnectionString": "DefaultEndpointsProtocol=",
+                "EventHub:EventHubConnectionString": "checkpoints"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}
