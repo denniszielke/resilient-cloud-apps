@@ -7,8 +7,7 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": [ "Creator", "Receiver"],
-            "preLaunchTask": "build-all",
+            "configurations": [ "Creator", "Receiver", "Sink"],
             "stopAll": true
         }
     ],
@@ -27,7 +26,22 @@
             "name": "Receiver",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-all",
+            "preLaunchTask": "build-receiver",
+            "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Message.Receiver",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "envFile": "${workspaceFolder}/local.env"
+        },
+        {
+            "name": "Sink",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-sink",
             "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Message.Receiver",
