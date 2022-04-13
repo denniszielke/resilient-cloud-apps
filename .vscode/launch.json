@@ -42,9 +42,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-sink",
-            "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
+            "program": "${workspaceFolder}/src/Message.Sink/bin/Debug/net6.0/Message.Sink.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Receiver",
+            "cwd": "${workspaceFolder}/src/Message.Sink",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

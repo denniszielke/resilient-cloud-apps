@@ -2,6 +2,7 @@ using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
+using Message.Receiver.Clients;
 
 namespace Message.Receiver.Background
 {
@@ -9,16 +10,19 @@ namespace Message.Receiver.Background
     {
         private readonly IConfiguration _configuration;
         private readonly BlobServiceClient _blobServiceClient;
+        private readonly SinkClient _sinkClient;
         private readonly ILogger<EventConsumer> _logger;
 
         private EventProcessorClient _processor;
 
         public EventConsumer(IConfiguration configuration,
                              BlobServiceClient blobServiceClient,
+                             SinkClient sinkClient,
                              ILogger<EventConsumer> logger)
         {
             _configuration = configuration;
             _blobServiceClient = blobServiceClient;
+            _sinkClient = sinkClient;
             _logger = logger;
         }
 
@@ -50,11 +54,12 @@ namespace Message.Receiver.Background
             await _processor.StopProcessingAsync();
         }
 
-        private Task ProcessEventHandler(ProcessEventArgs arg)
+        private async Task ProcessEventHandler(ProcessEventArgs arg)
         {
             _logger.LogTrace($"received message {arg.Data.MessageId}");
 
-            return Task.CompletedTask;
+            // TODO: send real message
+            await _sinkClient.SendMessageAsync("TODO");
         }
 
         private Task ProcessErrorHandler(ProcessErrorEventArgs arg)
