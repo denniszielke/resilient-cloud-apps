@@ -1,0 +1,5 @@
+az group create --name exampleRG --location westeurope
+az deployment group create --resource-group exampleRG --template-file main.bicep --parameters projectName=rel1
+
+
+az group delete --name exampleRG
