@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Azure;
+using Message.Receiver.Background;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -32,7 +33,10 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddAzureClients( b => { 
     b.AddEventHubConsumerClient(builder.Configuration.GetValue<string>("EventHub:EventHubName"), builder.Configuration.GetValue<string>("EventHub:EventHubConnectionString"));
+    b.AddBlobServiceClient(builder.Configuration.GetValue<string>("EventHub:BlobConnectionString"));
 });
+
+builder.Services.AddHostedService<EventConsumer>();
 
 var app = builder.Build();
 
