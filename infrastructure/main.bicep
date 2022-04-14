@@ -33,6 +33,14 @@ module cosmosdb 'cosmosdb.bicep' = {
   }
 }
 
+module storage 'storage.bicep' = {
+  name: 'storage'
+  params: {
+    location: location
+    storageAccountName: 'st${projectName}'
+  }
+}
+
 module appconfig 'appconfig.bicep' = {
   name: 'appconfig'
   params: {

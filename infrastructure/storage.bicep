@@ -1,10 +1,7 @@
 @description('Specifies the Azure location for all resources.')
 param location string = resourceGroup().location
 
-@description('Specifies a project name that is used to generate the Event Hub name and the Namespace name.')
-param projectName string
-
-var storageAccountName = '${projectName}st'
+param storageAccountName string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: storageAccountName
