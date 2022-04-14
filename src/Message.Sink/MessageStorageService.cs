@@ -52,20 +52,57 @@ public class MessageStorageService : IMessageStorageService
     {
         _logger.LogTrace($"Saving message in partition {message.Name} with rowkey {message.Id}");
 
-        TableEntity entity = new TableEntity(message.Name, message.Id){
-            { "Humidity", message.Humidity},
-            { "Temperature", message.Temperature},
-            { "Message", message.Message}
-        };
-
         bool success = false;
+
+        if (message == null || string.IsNullOrWhiteSpace(message.Name) || string.IsNullOrWhiteSpace(message.Id)) 
+        {
+            return false;
+        }
 
         try
         {
-            var itemAdded = await _tableClient.AddEntityAsync(entity);
+            
+            TableEntity existingEntity = await _tableClient.GetEntityAsync<TableEntity>(message.Name, message.Id);
+            if ( existingEntity != null)
+            {
+                existingEntity["Humidity"] = message.Humidity;
+                existingEntity["Temperature"] = message.Temperature;
+                existingEntity["Message"] = message.Message;
+
+                Task<Azure.Response> response = _tableClient.UpdateEntityAsync<TableEntity>(existingEntity, existingEntity.ETag, TableUpdateMode.Replace);
+
+                _logger.LogDebug($"Saved match in partition {message.Name} with rowkey {message.Id}");
+                return true;
+            }   
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+        {
+            _logger.LogInformation("Update of item failed. {0}", ex.Message);
+            success = false;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+        }
+
+        try
+        {
+            
+            TableEntity entity = new TableEntity(message.Name, message.Id){
+                { "Humidity", message.Humidity},
+                { "Temperature", message.Temperature},
+                { "Message", message.Message}
+            };
+
+            var itemAdded = await _tableClient.AddEntityAsync<TableEntity>(entity);
             success = !itemAdded.IsError;
             _logger.LogDebug($"Saved match in partition {message.Name} with rowkey {message.Id}");
-
+                
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+        {
+            _logger.LogInformation("Insert of item consumed {0} request units", ex.Message);
+            success = false;
         }
         catch (System.Exception ex)
         {

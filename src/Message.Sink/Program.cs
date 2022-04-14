@@ -35,10 +35,18 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.WriteIndented = true;
 });
 
+// builder.Services.AddSingleton( 
+//     s => {
+//         return new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(builder.Configuration.GetConnectionString("CosmosApi"))
+//             .Build();
+//     }
+// );
+
 builder.Services.AddAzureClients( b => { 
     b.AddTableServiceClient(builder.Configuration.GetConnectionString("CosmosTableApi"));
 });
 
+// builder.Services.AddSingleton<IMessageStorageService, MessageCosmosStorageService>();
 builder.Services.AddSingleton<IMessageStorageService, MessageStorageService>();
 
 var app = builder.Build();
