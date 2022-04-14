@@ -6,10 +6,28 @@ Let us run together a "game day" for resilience validation of our live Azure app
 Take a look how we use **Azure Chaos Studio** for doing resilience validation, and how we measure, understand, and improve resilience against real-world incidents using **resiliency patterns in code**.  
 We will also show you how you can use **Azure Monitor with Application Insights** to compare and understand the availability impact of your patterns.
 
+High Level Architecture:
+![](/architecture.png)
+
 ## Launch locally
 - create app insights, eventhub, blob storage
 - adjust environment variables in local.env accordingly
 - launch debug and open http://localhost:3000
+
+## Deploy Azure resources
+
+```
+RESOURCE_GROUP="reliabl5"
+GITHUB_REPO_OWNER="denniszielke"
+LOCATION="northeurope"
+
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+az deployment group create -g $RESOURCE_GROUP -f ./infrastructure/main.bicep \
+-p projectName=$RESOURCE_GROUP \
+-p containerRegistryOwner=$GITHUB_REPO_OWNER
+
+```
 
 ## Resiliency patterns shown in this sample
 
