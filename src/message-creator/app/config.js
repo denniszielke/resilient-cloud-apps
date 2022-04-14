@@ -18,9 +18,12 @@ else
     config.version = "no version";
 }
 
-config.receiverUrl = process.RECEIVER_URL;
+config.receiverUrl = process.env.RECEIVER_URL;
 
 config.eventhubConnectionString = process.env.EVENTHUB_CONNECTIONSTRING;
 config.eventhubName = process.env.EVENTHUB_NAME;
+
+console.log("loaded config:");
+console.log(config);
 
 module.exports = config;

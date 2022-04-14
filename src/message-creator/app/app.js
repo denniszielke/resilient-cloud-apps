@@ -128,6 +128,5 @@ app.post('/api/publishmessage', jsonParser, async(req, res) => {
     res.sendStatus(200);
 });
 
-console.log(config);
 console.log(OS.hostname());
 app.listen(config.port, () => console.log(`Node App listening on port ${config.port}!`));

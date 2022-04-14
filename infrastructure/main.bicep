@@ -19,7 +19,7 @@ module eventhub 'eventhub.bicep' = {
   params: {
     location: location
     eventHubNamespaceName: 'evhns-${projectName}'
-    eventHubName: 'evh-${projectName}'
+    eventHubName: 'events'
   }
 }
 
