@@ -48,15 +48,15 @@ public class MessageStorageService : IMessageStorageService
         return await Task.FromResult<bool>(false);
     }
 
-    public async Task<bool> SaveMessage(DeviceMessage message)
+    public async Task<MessageStatus> SaveMessage(DeviceMessage message)
     {
         _logger.LogTrace($"Saving message in partition {message.Name} with rowkey {message.Id}");
 
-        bool success = false;
+        MessageStatus status = MessageStatus.Failed;
 
         if (message == null || string.IsNullOrWhiteSpace(message.Name) || string.IsNullOrWhiteSpace(message.Id)) 
         {
-            return false;
+            return status;
         }
 
         try
@@ -71,18 +71,25 @@ public class MessageStorageService : IMessageStorageService
 
                 Task<Azure.Response> response = _tableClient.UpdateEntityAsync<TableEntity>(existingEntity, existingEntity.ETag, TableUpdateMode.Replace);
 
-                _logger.LogDebug($"Saved match in partition {message.Name} with rowkey {message.Id}");
-                return true;
+                _logger.LogDebug($"Updated message in partition {message.Name} with rowkey {message.Id}");
+                status = MessageStatus.Ok;
+                return status;
             }   
         }
         catch (Azure.RequestFailedException ex) when (ex.Status == 404)
         {
+            status = MessageStatus.Failed;
             _logger.LogInformation("Update of item failed. {0}", ex.Message);
-            success = false;
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 429)
+        {
+            status = MessageStatus.Throttled;
+            _logger.LogInformation("Please slow down. {0}", ex.Message);
+            
         }
         catch (System.Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError($"Failed to update message in partition {message.Name} with rowkey {message.Id}", ex.Message);
         }
 
         try
@@ -95,21 +102,34 @@ public class MessageStorageService : IMessageStorageService
             };
 
             var itemAdded = await _tableClient.AddEntityAsync<TableEntity>(entity);
-            success = !itemAdded.IsError;
-            _logger.LogDebug($"Saved match in partition {message.Name} with rowkey {message.Id}");
+            if(!itemAdded.IsError ){
+                status = MessageStatus.Ok;
+                _logger.LogDebug($"Saved message in partition {message.Name} with rowkey {message.Id}");
+            }else
+            {
+                status = MessageStatus.Failed;
+                _logger.LogInformation($"Failed to add message in partition {message.Name} with rowkey {message.Id}");
+            }          
                 
         }
         catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+        {            
+            status = MessageStatus.Failed;
+            _logger.LogError($"Failed to add message in partition {message.Name} with rowkey {message.Id}", ex.Message);
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 429)
         {
-            _logger.LogInformation("Insert of item consumed {0} request units", ex.Message);
-            success = false;
+            _logger.LogInformation("Please slow down. {0}", ex.Message);
+            status = MessageStatus.Throttled;
+            _logger.LogError($"Throttled to add message in partition {message.Name} with rowkey {message.Id}", ex.Message);
         }
         catch (System.Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            status = MessageStatus.Failed;
+            _logger.LogError($"Failed to add message in partition {message.Name} with rowkey {message.Id}", ex.Message);
         }
 
         
-        return success;
+        return status;
     }
 }

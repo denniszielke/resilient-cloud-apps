@@ -4,5 +4,5 @@ public interface IMessageStorageService
 {
     void Initialize(string tableName);
 
-    Task<bool> SaveMessage(DeviceMessage message);
+    Task<MessageStatus> SaveMessage(DeviceMessage message);
 }

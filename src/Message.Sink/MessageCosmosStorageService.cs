@@ -55,11 +55,11 @@ public class MessageCosmosStorageService : IMessageStorageService
             return await Task.FromResult<bool>(true);
         }
 
-    public async Task<bool> SaveMessage(DeviceMessage message)
+    public async Task<MessageStatus> SaveMessage(DeviceMessage message)
     {
         _logger.LogTrace($"Saving message in partition {message.Name} with rowkey {message.Id}");
 
-        bool success = false;
+        MessageStatus status = MessageStatus.Failed;
         ItemResponse<DeviceMessage> response = null;
 
         try
@@ -68,7 +68,7 @@ public class MessageCosmosStorageService : IMessageStorageService
 
             if (container == null){
                 _logger.LogCritical("Container was null");
-                return false;
+                return MessageStatus.Failed;
             }
 
             response = await container.CreateItemAsync<DeviceMessage>(message, new PartitionKey(message.Id));
@@ -77,31 +77,31 @@ public class MessageCosmosStorageService : IMessageStorageService
 
             if (response == null){
                 _logger.LogCritical("Response was null");
-                return false;
+                return MessageStatus.Failed;
             }
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created){
-                success = true;
+                status = MessageStatus.Ok;
                 _logger.LogDebug($"Saved message in partition {message.Name} with rowkey {message.Id}");
             }
             else{
-                success = false;
+                status = MessageStatus.Failed;
                 _logger.LogInformation($"Save of message in partition {message.Name} with rowkey {message.Id} resulted in {response.StatusCode}");
             }
         
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
         {
+            status = MessageStatus.Failed;
             _logger.LogInformation("Insert of item consumed {0} request units", response.RequestCharge);
-            success = false;
         }
         catch (System.Exception ex)
         {
+            status = MessageStatus.Failed;
             _logger.LogError(ex, ex.Message);
-            success = false;
         }
 
         
-        return success;
+        return status;
     }
 }
