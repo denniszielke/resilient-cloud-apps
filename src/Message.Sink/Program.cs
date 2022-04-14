@@ -36,7 +36,7 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 builder.Services.AddAzureClients( b => { 
-    b.AddTableServiceClient(builder.Configuration.GetConnectionString("StorageAccountConnection"));
+    b.AddTableServiceClient(builder.Configuration.GetConnectionString("CosmosTableApi"));
 });
 
 builder.Services.AddSingleton<IMessageStorageService, MessageStorageService>();

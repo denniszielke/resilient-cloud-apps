@@ -20,7 +20,11 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/src/message-creator/app/app.js",
-            "envFile": "${workspaceFolder}/local.env"
+            "envFile": "${workspaceFolder}/local.env",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
+            },
         },        
         {
             "name": "Receiver",
@@ -31,11 +35,11 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/Message.Receiver",
             "stopAtEntry": false,
+            "envFile": "${workspaceFolder}/local.env",
             "serverReadyAction": {
                 "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
             },
-            "envFile": "${workspaceFolder}/local.env"
         },
         {
             "name": "Sink",
@@ -46,11 +50,11 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/Message.Sink",
             "stopAtEntry": false,
+            "envFile": "${workspaceFolder}/local.env",
             "serverReadyAction": {
                 "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
             },
-            "envFile": "${workspaceFolder}/local.env"
         },
         {
             "name": ".NET Core Attach",
