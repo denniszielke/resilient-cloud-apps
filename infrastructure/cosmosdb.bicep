@@ -45,9 +45,10 @@ resource cosmosDBTable 'Microsoft.DocumentDB/databaseAccounts/tables@2021-04-15'
       id: cosmosdbTableName
     }
     options: {
-      autoscaleSettings: {
-        maxThroughput: autoscaleMaxThroughput
-      }
+      throughput: autoscaleMaxThroughput
+      // autoscaleSettings: {
+      //   maxThroughput: autoscaleMaxThroughput
+      // }
     }
   }
 }
