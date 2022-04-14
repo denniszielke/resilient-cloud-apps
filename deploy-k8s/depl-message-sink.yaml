@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-sink-app
+  labels:
+    app: message-sink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-sink
+  template:
+    metadata:
+      labels:
+        app: message-sink
+    spec:
+      containers:
+      - name: message-sink
+        image: ghcr.io/denniszielke/reliable-apps/message-sink:main
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+        env: 
+          - name: "PORT"
+            value: "8080"
+          - name: "ASPNETCORE_URLS"
+            value: "http://+:8080"
+          - name: "Cosmos__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: cosmosConnectionString
+          - name: "ApplicationInsights__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: applicationInsightsConnectionString

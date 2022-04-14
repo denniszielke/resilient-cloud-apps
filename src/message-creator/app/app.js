@@ -89,7 +89,7 @@ app.post('/api/newdevice', jsonParser, async (req, res) => {
 app.post('/api/invokerequest', jsonParser, async (req, res) => {
     console.log("received new device request:");
     console.log(req.body);
-    fetch(config.invocationUrl, {
+    fetch(config.receiverUrl, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -109,7 +109,7 @@ app.post('/api/invokerequest', jsonParser, async (req, res) => {
         console.log(text);
         res.status(200).send(text);
     }).catch((error) => {
-        console.log("failed to call " + config.invocationUrl);
+        console.log("failed to call " + config.receiverUrl);
         console.log(error);
         res.status(500).send({message: error});
     });

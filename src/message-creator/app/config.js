@@ -18,7 +18,7 @@ else
     config.version = "no version";
 }
 
-config.invocationUrl = process.INVOCATION_URL;
+config.receiverUrl = process.RECEIVER_URL;
 
 config.eventhubConnectionString = process.env.EVENTHUB_CONNECTIONSTRING;
 config.eventhubName = process.env.EVENTHUB_NAME;

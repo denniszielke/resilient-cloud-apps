@@ -9,12 +9,12 @@
     }
   },
   "profiles": {
-    "Gaming.NetCorePlayer": {
+    "Message.Receiver": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7150;http://localhost:5025",
+      "applicationUrl": "https://localhost:7025;http://localhost:5025",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

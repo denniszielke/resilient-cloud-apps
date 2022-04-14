@@ -18,8 +18,25 @@ spec:
       - name: message-creator
         image: ghcr.io/denniszielke/reliable-apps/message-creator:main
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         imagePullPolicy: Always
         env: 
           - name: "PORT"
-            value: "80"
+            value: "8080"
+          - name: "RECEIVER_URL"
+            value: "http://message-receiver/api/message/receive"
+          - name: "INSTRUMENTATIONKEY"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: applicationInsightsConnectionString
+          - name: "EVENTHUB_NAME"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: eventHubName
+          - name: "EVENTHUB_CONNECTIONSTRING"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: eventHubConnectionString

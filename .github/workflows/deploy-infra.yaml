@@ -1,0 +1,30 @@
+name: deploy-infrastructure-with-apps
+on:
+  workflow_dispatch:
+    inputs:
+      projectName:
+        description: 'Project name'     
+        required: true
+        default: 'reliabl123'
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy_infra:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: 'Run az commands'
+      run: |
+        az deployment group create -g ${{ secrets.RESOURCE_GROUP }} -f ./infrastructure/main.bicep \
+          -p projectName=${{ github.event.inputs.projectName }} \
+          -p containerRegistryOwner=${{ github.repository_owner }}

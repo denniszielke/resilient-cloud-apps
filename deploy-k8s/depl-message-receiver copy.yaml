@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-receiver-app
+  labels:
+    app: message-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-receiver
+  template:
+    metadata:
+      labels:
+        app: message-receiver
+    spec:
+      containers:
+      - name: message-receiver
+        image: ghcr.io/denniszielke/reliable-apps/message-receiver:main
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        env: 
+          - name: "PORT"
+            value: "8080"
+          - name: "ASPNETCORE_URLS"
+            value: "http://+:8080"
+          - name: "SINK_URL"
+            value: "http://message-sink/api/message/receive/"
+          - name: "SINK_WITH_RETRY_URL"
+            value: "http://message-sink/api/message/receive/"
+          - name: "SINK_WITH_CIRCUITBREAKER_URL"
+            value: "http://message-sink/api/message/receive/"
+          - name: "EVENTHUB_NAME"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: eventHubName
+          - name: "EVENTHUB_CONNECTIONSTRING"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: eventHubConnectionString
+          - name: "EventHub__BlobConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: blobConnectionString
+          - name: "ApplicationInsights__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: appconfig
+                key: applicationInsightsConnectionString

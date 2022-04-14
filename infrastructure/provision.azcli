@@ -1,5 +1,16 @@
-az group create --name exampleRG --location westeurope
-az deployment group create --resource-group exampleRG --template-file main.bicep --parameters projectName=rel1
 
 
-az group delete --name exampleRG
+
+
+RESOURCE_GROUP="reliabl5"
+GITHUB_REPO_OWNER="denniszielke"
+LOCATION="northeurope"
+
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+az deployment group create -g $RESOURCE_GROUP -f ./infrastructure/main.bicep \
+-p projectName=$RESOURCE_GROUP \
+-p containerRegistryOwner=$GITHUB_REPO_OWNER
+
+
+az group delete --name $RESOURCE_GROUP --yes

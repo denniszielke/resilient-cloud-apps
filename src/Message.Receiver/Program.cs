@@ -43,12 +43,12 @@ builder.Services.AddSingleton<SinkClient, SinkClient>();
 
 builder.Services.AddHttpClient("Sink", client =>
 {
-    client.BaseAddress = new Uri("https://api.github.com/");
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
 });
 
 builder.Services.AddHttpClient("Sink_WithRetry", client =>
 {
-    client.BaseAddress = new Uri("https://api.github.com/");
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_WITH_RETRY_URL"));
 }).AddTransientHttpErrorPolicy(b => b.WaitAndRetryAsync(new[]
 {
     TimeSpan.FromSeconds(0.5),
@@ -58,7 +58,7 @@ builder.Services.AddHttpClient("Sink_WithRetry", client =>
 
 builder.Services.AddHttpClient("Sink_WithRetryANdCircuitBreaking", client =>
 {
-    client.BaseAddress = new Uri("https://api.github.com/");
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_WITH_CIRCUITBREAKER_URL"));
 })
 .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
 {
