@@ -1,27 +1,27 @@
 using Microsoft.Azure.Cosmos;
 
-public class MessageCosmosStorageService : IMessageStorageService
+public class MessageCosmosTableStorageService : IMessageStorageService
 {
-    private readonly ILogger<MessageCosmosStorageService> _logger;
+    private readonly ILogger<MessageCosmosTableStorageService> _logger;
 
     private CosmosClient _cosmosClient;
 
     private static string TableName = "messages";
     private static string DatabaseName = "TablesDB";
 
-    public MessageCosmosStorageService(ILogger<MessageCosmosStorageService> logger, CosmosClient cosmosClient)
+    public MessageCosmosTableStorageService(ILogger<MessageCosmosTableStorageService> logger, CosmosClient cosmosClient)
     {
         _logger = logger;
         _cosmosClient = cosmosClient;
          AsyncHelper.RunAsync(async () => {
-               await CreateIfNotExistsAsync(MessageCosmosStorageService.DatabaseName, MessageCosmosStorageService.TableName);
+               await CreateIfNotExistsAsync(MessageCosmosTableStorageService.DatabaseName, MessageCosmosTableStorageService.TableName);
             });
     }
 
     public async void Initialize(string tableName)
     {
        AsyncHelper.RunAsync(async () => {
-               await CreateIfNotExistsAsync(MessageCosmosStorageService.DatabaseName, MessageCosmosStorageService.TableName);
+               await CreateIfNotExistsAsync(MessageCosmosTableStorageService.DatabaseName, MessageCosmosTableStorageService.TableName);
             });
     }
 
@@ -64,7 +64,7 @@ public class MessageCosmosStorageService : IMessageStorageService
 
         try
         {
-            var container = _cosmosClient.GetContainer(MessageCosmosStorageService.DatabaseName, MessageCosmosStorageService.TableName);
+            var container = _cosmosClient.GetContainer(MessageCosmosTableStorageService.DatabaseName, MessageCosmosTableStorageService.TableName);
 
             if (container == null){
                 _logger.LogCritical("Container was null");

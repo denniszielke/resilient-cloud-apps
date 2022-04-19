@@ -44,19 +44,22 @@ builder.Services.AddInMemoryRateLimiting();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 
-// builder.Services.AddSingleton( 
-//     s => {
-//         return new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(builder.Configuration.GetConnectionString("CosmosApi"))
-//             .Build();
-//     }
-// );
+builder.Services.AddSingleton( 
+    s => {
+        return new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(builder.Configuration.GetConnectionString("CosmosApi"))
+        .WithSerializerOptions( new Microsoft.Azure.Cosmos.CosmosSerializationOptions( ){
+            PropertyNamingPolicy = Microsoft.Azure.Cosmos.CosmosPropertyNamingPolicy.CamelCase               
+        })
+            .Build();
+    }
+);
 
-builder.Services.AddAzureClients( b => { 
-    b.AddTableServiceClient(builder.Configuration.GetConnectionString("CosmosTableApi"));
-});
+// builder.Services.AddAzureClients( b => { 
+//     b.AddTableServiceClient(builder.Configuration.GetConnectionString("CosmosTableApi"));
+// });
 
-// builder.Services.AddSingleton<IMessageStorageService, MessageCosmosStorageService>();
-builder.Services.AddSingleton<IMessageStorageService, MessageStorageService>();
+builder.Services.AddSingleton<IMessageStorageService, MessageCosmosSqlStorageService>();
+// builder.Services.AddSingleton<IMessageStorageService, MessageStorageService>();
 
 var app = builder.Build();
 

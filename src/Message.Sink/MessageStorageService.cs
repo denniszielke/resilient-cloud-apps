@@ -56,6 +56,7 @@ public class MessageStorageService : IMessageStorageService
 
         if (message == null || string.IsNullOrWhiteSpace(message.Name) || string.IsNullOrWhiteSpace(message.Id)) 
         {
+            _logger.LogCritical("Message data was null");
             return status;
         }
 

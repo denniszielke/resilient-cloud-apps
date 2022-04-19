@@ -23,15 +23,25 @@ module eventhub 'eventhub.bicep' = {
   }
 }
 
-module cosmosdb 'cosmosdb.bicep' = {
-  name: 'cosmosdb'
+module cosmosdbsql 'cosmosdb-sql.bicep' = {
+  name: 'cosmosdbsql'
   params: {
     location: location
-    cosmosdbAccountName: 'db${projectName}'
-    cosmosdbTableName: 'messages'
-    autoscaleMaxThroughput: 1000
+    cosmosdbAccountName: 'dbs${projectName}'
+    cosmosdbDatabaseName: 'messages'
+    autoscaleMaxThroughput: 400
   }
 }
+
+// module cosmosdbtable 'cosmosdb-table.bicep' = {
+//   name: 'cosmosdbtable'
+//   params: {
+//     location: location
+//     cosmosdbAccountName: 'dbt${projectName}'
+//     cosmosdbTableName: 'messages'
+//     autoscaleMaxThroughput: 400
+//   }
+// }
 
 module storage 'storage.bicep' = {
   name: 'storage'

@@ -17,7 +17,7 @@ High Level Architecture:
 ## Deploy Azure resources
 
 ```
-RESOURCE_GROUP="reliabl5"
+RESOURCE_GROUP="reliabl6"
 GITHUB_REPO_OWNER="denniszielke"
 LOCATION="northeurope"
 
