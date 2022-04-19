@@ -49,7 +49,8 @@ builder.Services.AddSingleton(
         return new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(builder.Configuration.GetConnectionString("CosmosApi"))
         .WithSerializerOptions( new Microsoft.Azure.Cosmos.CosmosSerializationOptions( ){
             PropertyNamingPolicy = Microsoft.Azure.Cosmos.CosmosPropertyNamingPolicy.CamelCase               
-        })
+        }).WithBulkExecution(false)
+        .WithThrottlingRetryOptions( TimeSpan.FromSeconds(1), 1)
             .Build();
     }
 );

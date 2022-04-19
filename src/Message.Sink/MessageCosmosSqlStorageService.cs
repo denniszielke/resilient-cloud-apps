@@ -137,7 +137,7 @@ public class MessageCosmosSqlStorageService : IMessageStorageService
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
         {
-            status = MessageStatus.Failed;
+            status = MessageStatus.Throttled;
             _logger.LogInformation("Insert of item consumed {0} request units", response.RequestCharge);
         }
         catch (CosmosException ex)

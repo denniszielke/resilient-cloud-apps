@@ -33,18 +33,17 @@ namespace Message.Sink.Controllers
                     return new JsonResult(BadRequest());
                 }
 
-                for (int i = 0; i < 1; i++)
-                {
-                    message.Id = message.Id + "i";
-                    var result = await _messageStorageService.SaveMessage(message);  
-                    if (result == MessageStatus.Throttled) 
-                    {
-                        returnCode = MessageStatus.Throttled;
-                    }
-                }
+                // int n = 100;
+                // Parallel.For(0, n, async i => {
+                //     message.Id = message.Id + "i";
+                    returnCode = await _messageStorageService.SaveMessage(message);  
+                    // if (returnCode == MessageStatus.Throttled) 
+                    // {
+                    //     returnCode = MessageStatus.Throttled;
+                    // }
+                // });
 
                 _logger.LogTrace($"written move {message}");
-                return new JsonResult(Ok());
             }
             catch (System.Exception ex)
             {
