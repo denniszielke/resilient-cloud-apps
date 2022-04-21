@@ -5,7 +5,7 @@ metadata:
   labels:
     app: message-receiver
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: message-receiver
@@ -18,8 +18,25 @@ spec:
       - name: message-receiver
         image: ghcr.io/{.registry}/reliable-apps/message-receiver:{.tag}
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "400Mi"
+            cpu: "400m"
         env: 
           - name: "PORT"
             value: "8080"
@@ -31,12 +48,12 @@ spec:
             value: "http://message-sink/api/message/receive/"
           - name: "SINK_WITH_CIRCUITBREAKER_URL"
             value: "http://message-sink/api/message/receive/"
-          - name: "EVENTHUB_NAME"
+          - name: "EventHub__EventHubName"
             valueFrom:
               secretKeyRef:
                 name: appconfig
                 key: eventHubName
-          - name: "EVENTHUB_CONNECTIONSTRING"
+          - name: "EVENTHUB__EventHubConnectionString"
             valueFrom:
               secretKeyRef:
                 name: appconfig
