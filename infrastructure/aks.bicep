@@ -31,3 +31,93 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
     ]
   }
 }
+
+resource aksChaosMesh 'Microsoft.Chaos/targets@2021-09-15-preview' = {
+  name: 'aksChaosMesh'
+  scope: aks
+  location: location
+  properties: {}
+}
+
+resource aksNetworkChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/NetworkChaos-2.1'
+  scope: aks
+}
+
+resource aksPodChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/PodChaos-2.1'
+  scope: aks
+}
+
+resource aksStressChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/StressChaos-2.1'
+  scope: aks
+}
+
+resource aksIOChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/IOChaos-2.1'
+  scope: aks
+}
+
+resource aksTimeChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/TimeChaos-2.1'
+  scope: aks
+}
+
+resource aksKernelChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/KernelChaos-2.1'
+  scope: aks
+}
+
+resource aksDNSChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/DNSChaos-2.1'
+  scope: aks
+}
+
+resource aksHTTPChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' = {
+  name: '${aksChaosMesh.name}/HTTPChaos-2.1'
+  scope: aks
+}
+
+resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
+  name: 'appChaos'
+  location: location
+  properties: {
+    selectors: [
+      {
+        type: 'List'
+        id: 'SelectorAKS'
+        targets: [
+          {
+            type: 'ChaosTarget'
+            id: aks.id
+          }
+        ]
+      }
+    ]
+    steps: [
+      {
+        name: 'Step 1'
+        branches: [
+          {
+            name: 'Branch 1'
+            actions: [
+              {
+                type: 'continuous'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:httpChaos/2.1'
+                duration: 'PT10M'
+                selectorId: 'SelectorAKS'
+                parameters: [
+                    {
+                        key: 'jsonSpec'
+                        value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"target":"Request","port":80,"method":"GET","path":"/api","abort":true,"duration":"5m","scheduler":{"cron":"@every 10m"}}'
+                    }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
