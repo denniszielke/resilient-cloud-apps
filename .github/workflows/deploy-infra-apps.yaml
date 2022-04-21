@@ -35,3 +35,7 @@ jobs:
       run: |
         chmod +x ./deploy-infra.sh
         ./deploy-infra.sh ${{ github.event.inputs.resourceGroup }} ${{ github.event.inputs.location }} ${{ github.event.inputs.projectName }}
+        
+        chmod +x ./deploy-apps.sh
+        ./deploy-apps.sh ${{ github.event.inputs.resourceGroup }} ${{ github.event.inputs.projectName }} "ghcr.io/${{ github.repository_owner }}/reliable-apps" ${GITHUB_RUN_ID}
+

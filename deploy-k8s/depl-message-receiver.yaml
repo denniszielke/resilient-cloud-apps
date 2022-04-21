@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: message-receiver
-        image: ghcr.io/denniszielke/reliable-apps/message-receiver:main
+        image: ghcr.io/{.registry}/reliable-apps/message-receiver:{.tag}
         ports:
         - containerPort: 80
         imagePullPolicy: Always

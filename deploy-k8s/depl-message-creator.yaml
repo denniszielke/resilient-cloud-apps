@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: message-creator
-        image: ghcr.io/denniszielke/reliable-apps/message-creator:main
+        image: ghcr.io/{.registry}/reliable-apps/message-creator:{.tag}
         ports:
         - containerPort: 8080
         imagePullPolicy: Always

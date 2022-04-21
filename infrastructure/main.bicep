@@ -3,7 +3,6 @@ param location string = resourceGroup().location
 
 @description('Specifies a project name that is used to generate the Event Hub name and the Namespace name.')
 param projectName string
-param containerRegistryOwner string
 
 module logging 'logging.bicep' = {
   name: 'logging'

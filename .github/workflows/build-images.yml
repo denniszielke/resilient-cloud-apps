@@ -1,0 +1,70 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build-images
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+    paths:
+      - src/**
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: src
+
+env:
+  CREATOR_IMAGE_NAME: message-creator
+  RECEIVER_IMAGE_NAME: message-receiver
+  SINK_IMAGE_NAME: message-sink
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          cd message-creator
+          docker build . --file Dockerfile --tag $CREATOR_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          cd ../Message.Receiver
+          docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          cd ../Message.Sink
+          docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+        
+      - name: Log in to registry
+        # This is where you will update the PAT to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          CREATOR_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$CREATOR_IMAGE_NAME
+          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
+          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:latest
+          docker push $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
+          docker push $CREATOR_IMAGE_ID:latest
+
+          RECEIVER_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$RECEIVER_IMAGE_NAME
+          docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:${GITHUB_RUN_ID}
+          docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:latest
+          docker push $RECEIVER_IMAGE_ID:${GITHUB_RUN_ID}
+          docker push $RECEIVER_IMAGE_ID:latest
+
+          SINK_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$SINK_IMAGE_NAME
+          docker tag $SINK_IMAGE_NAME $SINK_IMAGE_ID:${GITHUB_RUN_ID}
+          docker tag $SINK_IMAGE_NAME $SINK_IMAGE_ID:latest
+          docker push $SINK_IMAGE_ID:${GITHUB_RUN_ID}
+          docker push $SINK_IMAGE_ID:latest
