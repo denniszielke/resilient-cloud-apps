@@ -14,13 +14,18 @@ namespace Message.Receiver.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task SendMessageAsync(string message)
+        public async Task SendMessageAsync(DeviceMessage message)
         {
             var client = _httpClientFactory.CreateClient("Sink"); 
             // var client = _httpClientFactory.CreateClient("Sink_WithRetry"); 
             // var client = _httpClientFactory.CreateClient("Sink_WithRetryANdCircuitBreaking"); 
 
-            await client.PostAsJsonAsync("/receive", new object());
+            await client.PostAsJsonAsync("/api/message/receive", 
+            message, 
+            new System.Text.Json.JsonSerializerOptions(){
+                WriteIndented = true,
+                PropertyNameCaseInsensitive = true
+            });
         }
     }
 }

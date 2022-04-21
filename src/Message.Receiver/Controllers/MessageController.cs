@@ -34,8 +34,7 @@ namespace Message.Receiver.Controllers
                     return new JsonResult(Ok());
                 }
 
-                // TODO: send real message
-                await _sinkClient.SendMessageAsync("TODO");
+                await _sinkClient.SendMessageAsync(message);
 
                 _logger.LogTrace($"written move {message}");
             }
