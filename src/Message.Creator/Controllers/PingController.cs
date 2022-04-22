@@ -14,7 +14,7 @@ namespace Message.Creator.Controllers {
             _logger = logger;
         }
 
-        [HttpGet(Name = "Get")]
+        [HttpGet("/ping", Name = "Get")]
         public string Get()
         {
             return "Pong!";

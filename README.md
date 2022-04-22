@@ -18,14 +18,25 @@ High Level Architecture:
 
 ```
 RESOURCE_GROUP="reliabl6"
-GITHUB_REPO_OWNER="denniszielke"
+PROJECT_NAME="reliabl6"
 LOCATION="northeurope"
 
-az group create --name $RESOURCE_GROUP --location $LOCATION
+./deploy-infra.sh $RESOURCE_GROUP $LOCATION $PROJECT_NAME
 
-az deployment group create -g $RESOURCE_GROUP -f ./infrastructure/main.bicep \
--p projectName=$RESOURCE_GROUP \
--p containerRegistryOwner=$GITHUB_REPO_OWNER
+```
+
+## Deploy Apps into Cluster
+
+```
+RESOURCE_GROUP="reliabl6"
+PROJECT_NAME="reliabl6"
+GITHUB_REPO_OWNER="denniszielke"
+IMAGE_TAG="latest"
+ENABLE_RATE_LIMITING="true"
+ENABLE_RETRY="false"
+ENABLE_BREAKER="false"
+
+./deploy-apps.sh $RESOURCE_GROUP $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
 
 ```
 

@@ -14,13 +14,13 @@ namespace Message.Receiver.Controllers {
             _logger = logger;
         }
 
-        [HttpGet(Name = "Get")]
+        [HttpGet("/ping", Name = "Get")]
         public string Get()
         {
             return "Pong!";
         }
 
-        [HttpGet(Name = "getversion")]
+        [HttpGet("/getversion", Name = "getversion")]
         public string GetVersion()
         {
             return Environment.GetEnvironmentVariable("VERSION");
