@@ -42,6 +42,9 @@ builder.Services.AddAzureClients(b =>
 });
 
 builder.Services.AddSingleton<SinkClient, SinkClient>();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 bool enableRetry = builder.Configuration.GetValue<bool>("HttpClient:EnableRetry");
 bool enableBreaker = builder.Configuration.GetValue<bool>("HttpClient:EnableBreaker");
@@ -91,7 +94,14 @@ if (!enableBreaker && !enableRetry){
 
 var app = builder.Build();
 
-app.UseStaticFiles("/wwwroot");
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseStaticFiles();
 var options = new DefaultFilesOptions();
 options.DefaultFileNames.Clear();
 options.DefaultFileNames.Add("index.html");

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace Message.Creator.Controllers { 
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("app")]
     public class AppController : ControllerBase
     {
         private readonly ILogger<AppController> _logger;
@@ -14,13 +14,13 @@ namespace Message.Creator.Controllers {
             _logger = logger;
         }
 
-        [HttpGet(Name = "getappinsightskey")]
+        [HttpGet("/getappinsightskey", Name = "getappinsightskey")]
         public string GetAppInsightsKey()
         {
-            return "Pong!";
+            return Environment.GetEnvironmentVariable("ApplicationInsights__ConnectionString");
         }
 
-        [HttpGet(Name = "getname")]
+        [HttpGet("/getname", Name = "getname")]
         public string GetName()
         {
             string[] names = {"Peter", "Steve", "Bill", "Dave", "Tom", "Tim", "Dale", "Ben", "Andy", "Mike", "Anne", "Cat", "Maria", "Lucy", "Kye", "Paula", "Lena", "Kelly", "Ringo", "Matt"};

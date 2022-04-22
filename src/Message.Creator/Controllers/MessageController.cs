@@ -11,7 +11,7 @@ namespace Message.Creator.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class MessageController : ControllerBase
     {
         private readonly SinkClient _sinkClient;
@@ -27,7 +27,7 @@ namespace Message.Creator.Controllers
             _eventHubClient = eventHubClient;
         }
 
-        [HttpPost("receive")]
+        [HttpPost("/receive")]
         public async Task<IActionResult> Receive([FromBody] DeviceMessage message)
         {
             int responseCode = 200;
@@ -53,7 +53,7 @@ namespace Message.Creator.Controllers
             return new JsonResult(new StatusCodeResult(responseCode));
         }
 
-        [HttpPost("publish")]
+        [HttpPost("/publish")]
         public async Task<IActionResult> Publish([FromBody] DeviceMessage message)
         {
             int responseCode = 200;

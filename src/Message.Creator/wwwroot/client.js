@@ -46,7 +46,7 @@ angular.module('SimulatorApp', [])
             };
 
             $scope.Stats = function () {
-                var postUrl = apiUrl + 'app/getname';
+                var postUrl = apiUrl + 'getname';
                 var config = {
                     headers: {
                         'Accept': 'application/json',
@@ -63,7 +63,7 @@ angular.module('SimulatorApp', [])
             };
 
             $scope.InvokeRequest = function () {
-                var postUrl = apiUrl + 'api/receive';
+                var postUrl = apiUrl + 'receive';
                 var uid = uuidv4();
                 var logDateStr = logDate();
                 var config = {
@@ -103,7 +103,7 @@ angular.module('SimulatorApp', [])
             };
 
             $scope.PublishMessage = function () {
-                var postUrl = apiUrl + 'api/publish';
+                var postUrl = apiUrl + 'publish';
                 var uid = uuidv4();
                 var logDateStr = logDate();
                 var config = {
