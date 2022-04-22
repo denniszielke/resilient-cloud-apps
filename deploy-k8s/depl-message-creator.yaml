@@ -55,12 +55,12 @@ spec:
               secretKeyRef:
                 name: appconfig
                 key: applicationInsightsConnectionString
-          - name: "EVENTHUB_NAME"
+          - name: "EventHub__EventHubName"
             valueFrom:
               secretKeyRef:
                 name: appconfig
                 key: eventHubName
-          - name: "EVENTHUB_CONNECTIONSTRING"
+          - name: "EventHub__EventHubConnectionString"
             valueFrom:
               secretKeyRef:
                 name: appconfig

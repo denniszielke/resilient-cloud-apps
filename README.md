@@ -21,7 +21,7 @@ RESOURCE_GROUP="reliabl6"
 PROJECT_NAME="reliabl6"
 LOCATION="northeurope"
 
-./deploy-infra.sh $RESOURCE_GROUP $LOCATION $PROJECT_NAME
+bash ./deploy-infra.sh $RESOURCE_GROUP $LOCATION $PROJECT_NAME
 
 ```
 
@@ -36,9 +36,11 @@ ENABLE_RATE_LIMITING="true"
 ENABLE_RETRY="false"
 ENABLE_BREAKER="false"
 
-./deploy-apps.sh $RESOURCE_GROUP $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
+bash ./deploy-apps.sh $RESOURCE_GROUP $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
 
 ```
+
+# OPENING / on the UI does not work - YOU HAVE TO USE /index.html
 
 ## Resiliency patterns shown in this sample
 

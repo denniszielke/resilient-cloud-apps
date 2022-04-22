@@ -46,7 +46,7 @@ spec:
             value: "http://+:8080"
           - name: "IpRateLimiting__EnableEndpointRateLimiting"
             value: "{.enableRateLimiting}"
-          - name: "ConnectionStrings__CosmosTableApi"
+          - name: "ConnectionStrings__CosmosApi"
             valueFrom:
               secretKeyRef:
                 name: appconfig
