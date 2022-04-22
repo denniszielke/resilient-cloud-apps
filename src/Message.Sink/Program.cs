@@ -64,13 +64,6 @@ builder.Services.AddSingleton<IMessageStorageService, MessageCosmosSqlStorageSer
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.MapControllers();
 
 if (builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting") == true){

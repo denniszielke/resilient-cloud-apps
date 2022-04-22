@@ -39,14 +39,13 @@ angular.module('SimulatorApp', [])
                     .success(function (response) { 
                         $scope.appInsightsKey = response;
                         console.log(response);
-                        $scope.result = "Connected";
                         initAppInsights($scope.appInsightsKey);
                     }); 
 
             };
 
-            $scope.Stats = function () {
-                var postUrl = apiUrl + 'getname';
+            $scope.Version = function () {
+                var postUrl = apiUrl + 'getversion';
                 var config = {
                     headers: {
                         'Accept': 'application/json',
@@ -62,18 +61,49 @@ angular.module('SimulatorApp', [])
                     });       
             };
 
+            $scope.Name = function () {
+                var postUrl = apiUrl + 'getname';
+                var config = {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+                $http.get(postUrl, { 'getname': status }, config)
+                    .success(function (response) { 
+                        $scope.name = response;
+                        $scope.message = 'hi from ' + response;
+                        $scope.humidity = 20;
+                        $scope.temperature = 15;
+                        $scope.result = "Connected";
+                        $scope.responses =  [];
+                        console.log("received version:");
+                        console.log(response);
+                    });       
+            };
+
+            $scope.CalculateCssClass = function(status){
+                if (status && status != undefined){
+                    if (status.toString().indexOf("200") >= 0)
+                        return "bg-green";
+                    else if (status.toString().indexOf("429") >= 0)
+                        return "bg-yellow";
+                    else if (status.toString().indexOf("500") >= 0)
+                        return "bg-red";
+                    else
+                        return "bg-info";
+                }
+            }
+
             $scope.InvokeRequest = function () {
                 var postUrl = apiUrl + 'receive';
                 var uid = uuidv4();
                 var logDateStr = logDate();
+                $scope.requeststartDate = new Date();
                 var config = {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'Ce-Specversion': '1.0',
-                        'Ce-Type': 'dapr-demo',
-                        'Ce-Source' : 'message-creator',
-                        'Ce-Id': uid,
                         'id': uid,
                         'temperature': $scope.temperature,
                         'humidity': $scope.humidity,
@@ -93,7 +123,10 @@ angular.module('SimulatorApp', [])
                 console.log(config.headers);
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
+                        var endDate = new Date();
+                        response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
+                        $scope.responses.splice(0,0,response);
                         console.log("received response:");
                         console.log(response);  
                         if ($scope.loop){
@@ -106,14 +139,11 @@ angular.module('SimulatorApp', [])
                 var postUrl = apiUrl + 'publish';
                 var uid = uuidv4();
                 var logDateStr = logDate();
+                $scope.requeststartDate = new Date();
                 var config = {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'Ce-Specversion': '1.0',
-                        'Ce-Type': 'dapr-demo',
-                        'Ce-Source' : 'message-creator',
-                        'Ce-Id': uid,
                         'id': uid,
                         'temperature': $scope.temperature,
                         'humidity': $scope.humidity,
@@ -134,7 +164,10 @@ angular.module('SimulatorApp', [])
                 console.log(config.headers);
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
+                        var endDate = new Date();
+                        response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
+                        $scope.responses.splice(0,0,response);
                         console.log("received response:");
                         console.log(response);  
                         if ($scope.loop){
@@ -162,6 +195,7 @@ angular.module('SimulatorApp', [])
             };
             
             $scope.Init();
-            $scope.Stats();
+            $scope.Version();
+            $scope.Name();
         }
     );

@@ -30,42 +30,44 @@ namespace Message.Creator.Controllers
         [HttpPost("/receive")]
         public async Task<IActionResult> Receive([FromBody] DeviceMessage message)
         {
-            int responseCode = 200;
+            MessageResponse response = null;
             try
             {
                 _logger.LogTrace($"received message {message.Id}");
 
                 if (string.IsNullOrWhiteSpace(message.Id))
                 {
-                    return new JsonResult(BadRequest());
+                    return new BadRequestResult();
                 }
 
-                responseCode = await _sinkClient.SendMessageAsync(message);
+                response = await _sinkClient.SendMessageAsync(message);   
 
                 _logger.LogTrace($"written move {message}");
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return new JsonResult(BadRequest());
+                response = new MessageResponse(){
+                        Id = message.Id, Status = MessageStatus.Failed, Sender = "message-creator", Host = Environment.MachineName
+                    };
             }
 
-            return new JsonResult(new StatusCodeResult(responseCode));
+            return new JsonResult(response);
         }
 
         [HttpPost("/publish")]
         public async Task<IActionResult> Publish([FromBody] DeviceMessage message)
         {
-            int responseCode = 200;
+            MessageResponse response = null;
             try
             {
                 _logger.LogTrace($"received message {message.Id}");
 
                 if (string.IsNullOrWhiteSpace(message.Id))
                 {
-                    return new JsonResult(BadRequest());
+                    return new BadRequestResult();
                 }
-
+                
                 using EventDataBatch eventBatch = await _eventHubClient.CreateBatchAsync();
                 string jsonString = JsonSerializer.Serialize(message);
 
@@ -73,17 +75,22 @@ namespace Message.Creator.Controllers
                 
                 await _eventHubClient.SendAsync(eventBatch);
 
+                response = new MessageResponse(){
+                        Id = message.Id, Status = MessageStatus.Ok, Sender = "message-creator", Host = Environment.MachineName
+                    };
+
                 _logger.LogTrace($"written move {message}");
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return new JsonResult(BadRequest());
+                response = new MessageResponse(){
+                        Id = message.Id, Status = MessageStatus.Failed, Sender = "message-creator", Host = Environment.MachineName
+                    };
             }
 
-            return new JsonResult(new StatusCodeResult(responseCode));
+            return new JsonResult(response);
         }
-
 
     }
 

@@ -38,7 +38,7 @@ jobs:
 
       - name: Build image
         run: |
-          cd message-creator
+          cd Message.Creator
           docker build . --file Dockerfile --tag $CREATOR_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
           cd ../Message.Receiver
           docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"

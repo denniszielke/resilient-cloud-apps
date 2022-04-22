@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Message.Sink.Controllers
@@ -22,35 +23,39 @@ namespace Message.Sink.Controllers
         [HttpPost("receive")]
         public async Task<IActionResult> Receive([FromBody] DeviceMessage message)
         {
-            MessageStatus returnCode = MessageStatus.Failed;
+            MessageResponse response = null;
 
             try
             {
                 _logger.LogTrace($"received message {message.Id}");
                
-                
                 if( string.IsNullOrWhiteSpace(message.Id)){
-                    return new JsonResult(BadRequest());
+                    return new BadRequestResult();
                 }
+                response = new MessageResponse();
+                response.Id = message.Id;
 
-                returnCode = await _messageStorageService.SaveMessage(message);  
+                var returnCode = await _messageStorageService.SaveMessage(message);  
 
+                var receivedResponse = new MessageResponse(){
+                        Id = message.Id, Status = returnCode, Sender = "cosmosdb", Host = Environment.MachineName
+                    };
+
+                response.Status = returnCode;
+                response.Sender = "message-sink";
+                response.Dependency = receivedResponse;
+                response.Host = Environment.MachineName;
                 _logger.LogTrace($"written move {message}");
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return new JsonResult(new StatusCodeResult(500));
+                response = new MessageResponse(){
+                        Id = message.Id, Status = MessageStatus.Failed, Sender = "message-sink", Host = Environment.MachineName
+                    };
             }
 
-            if(returnCode == MessageStatus.Throttled){
-                return new JsonResult(new StatusCodeResult(429));
-            }else if (returnCode == MessageStatus.Ok)
-            {
-                return new JsonResult(Ok());
-            }
-
-            return new JsonResult(new StatusCodeResult(500));
+            return new JsonResult(response);
         }
 
     }
