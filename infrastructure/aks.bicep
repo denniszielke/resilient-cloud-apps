@@ -33,7 +33,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
 }
 
 resource aksChaosMesh 'Microsoft.Chaos/targets@2021-09-15-preview' = {
-  name: 'aksChaosMesh'
+  name: 'Microsoft-AzureKubernetesServiceChaosMesh'
   scope: aks
   location: location
   properties: {}
@@ -82,6 +82,9 @@ resource aksHTTPChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' 
 resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
   name: 'appChaos'
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     selectors: [
       {
@@ -118,6 +121,40 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
           }
         ]
       }
+      {
+        name: 'AKS pod kill'
+        branches: [
+          {
+            name: 'AKS pod kill'
+            actions: [
+              {
+                type: 'continuous'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1'
+                duration: 'PT10M'
+                selectorId: 'SelectorAKS'
+                parameters: [
+                  {
+                      key: 'jsonSpec'
+                      value: '{"action":"pod-failure","mode":"all","duration":"600s","selector":{"namespaces":["default"]}}'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ]
+  }
+}
+
+var roleDefinitionResourceId = '0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8' // Azure Kubernetes Service Cluster Admin Role
+
+resource chaosRoleAssign 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(aks.id, roleDefinitionResourceId)
+  scope: aks
+  properties: {
+    roleDefinitionId: roleDefinitionResourceId 
+    principalId: aksChaosExperiment.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
