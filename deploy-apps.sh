@@ -7,6 +7,22 @@ RESOURCE_GROUP="$1"
 PROJECT_NAME="$2" # here enter unique deployment name (ideally short and with letters for global uniqueness)
 REGISTRY_OWNER="$3"
 IMAGE_TAG="$4"
+ENABLE_RATE_LIMITING="$5"
+ENABLE_RETRY="$6"
+ENABLE_BREAKER="$7"
+
+if [ "$ENABLE_RATE_LIMITING" == "" ]; then
+    echo "setting rate limiting to false"
+    ENABLE_RATE_LIMITING=false
+fi
+if [ "$ENABLE_RETRY" == "" ]; then
+    echo "setting rate limiting to false"
+    ENABLE_RETRY=false
+fi
+if [ "$ENABLE_BREAKER" == "" ]; then
+    echo "setting rate limiting to false"
+    ENABLE_BREAKER=false
+fi
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
 
@@ -77,6 +93,9 @@ kubectl apply -f ./deploy-k8s/svc-message-sink.yaml
 
 replaces="s/{.registry}/$REGISTRY_OWNER/;";
 replaces="$replaces s/{.tag}/$IMAGE_TAG/; ";
+replaces="$replaces s/{.enableRateLimiting}/$ENABLE_RATE_LIMITING/; ";
+replaces="$replaces s/{.enableRetry}/$ENABLE_RETRY/; ";
+replaces="$replaces s/{.enableBreaker}/$ENABLE_BREAKER/; ";
 
 cat ./deploy-k8s/depl-message-creator.yaml | sed -e "$replaces" | kubectl apply -f -
 cat ./deploy-k8s/depl-message-receiver.yaml | sed -e "$replaces" | kubectl apply -f -

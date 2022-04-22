@@ -17,8 +17,6 @@ namespace Message.Receiver.Clients
         public async Task SendMessageAsync(DeviceMessage message)
         {
             var client = _httpClientFactory.CreateClient("Sink"); 
-            // var client = _httpClientFactory.CreateClient("Sink_WithRetry"); 
-            // var client = _httpClientFactory.CreateClient("Sink_WithRetryANdCircuitBreaking"); 
 
             await client.PostAsJsonAsync("/api/message/receive", 
             message, 

@@ -43,11 +43,11 @@ spec:
           - name: "ASPNETCORE_URLS"
             value: "http://+:8080"
           - name: "SINK_URL"
-            value: "http://message-sink/api/message/receive/"
-          - name: "SINK_WITH_RETRY_URL"
-            value: "http://message-sink/api/message/receive/"
-          - name: "SINK_WITH_CIRCUITBREAKER_URL"
-            value: "http://message-sink/api/message/receive/"
+            value: "http://message-sink/"
+          - name: "HttpClient__EnableRetry"
+            value: "{.enableRetry}"
+          - name: "HttpClient__EnableBreaker"
+            value: "{.enableBreaker}"
           - name: "EventHub__EventHubName"
             valueFrom:
               secretKeyRef:

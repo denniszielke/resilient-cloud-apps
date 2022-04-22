@@ -8,10 +8,8 @@ using Microsoft.Extensions.Azure;
 using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
-builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
 builder.Services.AddControllers(options =>
 {
@@ -37,12 +35,16 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 builder.Services.AddOptions();
-builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
-builder.Services.AddInMemoryRateLimiting();
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");
+Console.WriteLine("Rate limiting is set to: " + enableRateLimiting);
 
+if (enableRateLimiting){
+    builder.Services.AddMemoryCache();
+    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+    builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+    builder.Services.AddInMemoryRateLimiting();
+    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+}
 
 builder.Services.AddSingleton( 
     s => {
@@ -72,5 +74,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.UseIpRateLimiting();
+
+if (builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting") == true){
+    app.UseIpRateLimiting();
+}
 app.Run();

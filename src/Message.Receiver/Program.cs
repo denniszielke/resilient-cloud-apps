@@ -10,10 +10,8 @@ using Polly;
 using Message.Receiver.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
-builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
 builder.Services.AddControllers(options =>
 {
@@ -41,35 +39,51 @@ builder.Services.AddAzureClients(b =>
 
 builder.Services.AddSingleton<SinkClient, SinkClient>();
 
-builder.Services.AddHttpClient("Sink", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
-});
+bool enableRetry = builder.Configuration.GetValue<bool>("HttpClient:EnableRetry");
+bool enableBreaker = builder.Configuration.GetValue<bool>("HttpClient:EnableBreaker");
 
-builder.Services.AddHttpClient("Sink_WithRetry", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_WITH_RETRY_URL"));
-}).AddTransientHttpErrorPolicy(b => b.WaitAndRetryAsync(new[]
-{
-    TimeSpan.FromSeconds(0.5),
-    TimeSpan.FromSeconds(1),
-    TimeSpan.FromSeconds(5)
-}));
+Console.WriteLine("Retry is set to: " + enableRetry);
+Console.WriteLine("Breaker is set to: " + enableBreaker);
 
-builder.Services.AddHttpClient("Sink_WithRetryANdCircuitBreaking", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_WITH_CIRCUITBREAKER_URL"));
-})
-.AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
-{
-    TimeSpan.FromSeconds(0.5),
-    TimeSpan.FromSeconds(1),
-    TimeSpan.FromSeconds(5)
-}))
-.AddTransientHttpErrorPolicy(builder => builder.CircuitBreakerAsync(
-    handledEventsAllowedBeforeBreaking: 3,
-    durationOfBreak: TimeSpan.FromSeconds(30)
-));
+if (!enableBreaker && !enableRetry){
+    builder.Services.AddHttpClient("Sink", client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
+    });
+}else if (!enableBreaker && enableRetry){
+    builder.Services.AddHttpClient("Sink", client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
+    }).AddTransientHttpErrorPolicy(b => b.WaitAndRetryAsync(new[]
+    {
+        TimeSpan.FromSeconds(0.5),
+        TimeSpan.FromSeconds(1),
+        TimeSpan.FromSeconds(5)
+    }));
+}else if (enableBreaker && !enableRetry){
+    builder.Services.AddHttpClient("Sink", client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
+    }).AddTransientHttpErrorPolicy(builder => builder.CircuitBreakerAsync(
+        handledEventsAllowedBeforeBreaking: 3,
+        durationOfBreak: TimeSpan.FromSeconds(30)
+    ));
+}else if (enableBreaker && enableRetry){
+    builder.Services.AddHttpClient("Sink", client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
+    })
+    .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
+    {
+        TimeSpan.FromSeconds(0.5),
+        TimeSpan.FromSeconds(1),
+        TimeSpan.FromSeconds(5)
+    }))
+    .AddTransientHttpErrorPolicy(builder => builder.CircuitBreakerAsync(
+        handledEventsAllowedBeforeBreaking: 3,
+        durationOfBreak: TimeSpan.FromSeconds(30)
+    ));
+}
 
 builder.Services.AddHostedService<EventConsumer>();
 

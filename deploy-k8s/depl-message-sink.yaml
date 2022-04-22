@@ -42,6 +42,8 @@ spec:
             value: "8080"
           - name: "ASPNETCORE_URLS"
             value: "http://+:8080"
+          - name: "IpRateLimiting__EnableEndpointRateLimiting"
+            value: "{.enableRateLimiting}"
           - name: "ConnectionStrings__CosmosTableApi"
             valueFrom:
               secretKeyRef:
