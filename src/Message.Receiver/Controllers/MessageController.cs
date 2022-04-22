@@ -25,26 +25,27 @@ namespace Message.Receiver.Controllers
         [HttpPost("receive")]
         public async Task<IActionResult> Receive([FromBody] DeviceMessage message)
         {
+            int responseCode = 200;
             try
             {
                 _logger.LogTrace($"received message {message.Id}");
 
                 if (string.IsNullOrWhiteSpace(message.Id))
                 {
-                    return new JsonResult(Ok());
+                    return new JsonResult(BadRequest());
                 }
 
-                await _sinkClient.SendMessageAsync(message);
+                responseCode = await _sinkClient.SendMessageAsync(message);
 
                 _logger.LogTrace($"written move {message}");
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return new JsonResult(Ok());
+                return new JsonResult(BadRequest());
             }
 
-            return new JsonResult(Ok());
+            return new JsonResult(new StatusCodeResult(responseCode));
         }
 
     }

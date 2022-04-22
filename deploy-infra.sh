@@ -9,8 +9,6 @@ PROJECT_NAME="$3" # here enter unique deployment name (ideally short and with le
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
 
-RESOURCE_GROUP=$DEPLOYMENT_NAME # here enter the resources group
-
 if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
     echo "creating resource group $RESOURCE_GROUP..."
     az group create -n $RESOURCE_GROUP -l $LOCATION -o none

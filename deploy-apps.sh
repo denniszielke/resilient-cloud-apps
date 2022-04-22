@@ -16,11 +16,11 @@ if [ "$ENABLE_RATE_LIMITING" == "" ]; then
     ENABLE_RATE_LIMITING=false
 fi
 if [ "$ENABLE_RETRY" == "" ]; then
-    echo "setting rate limiting to false"
+    echo "setting retry to false"
     ENABLE_RETRY=false
 fi
 if [ "$ENABLE_BREAKER" == "" ]; then
-    echo "setting rate limiting to false"
+    echo "setting breaker to false"
     ENABLE_BREAKER=false
 fi
 
@@ -111,4 +111,4 @@ else
 fi
 
 helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing \ 
-    --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5
+    --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait

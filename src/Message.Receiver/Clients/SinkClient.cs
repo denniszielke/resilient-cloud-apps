@@ -2,6 +2,7 @@ using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
+using System.Net;
 
 namespace Message.Receiver.Clients
 {
@@ -14,16 +15,21 @@ namespace Message.Receiver.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task SendMessageAsync(DeviceMessage message)
+        public async Task<int> SendMessageAsync(DeviceMessage message)
         {
             var client = _httpClientFactory.CreateClient("Sink"); 
 
-            await client.PostAsJsonAsync("/api/message/receive", 
+            var response = await client.PostAsJsonAsync("/api/message/receive", 
             message, 
             new System.Text.Json.JsonSerializerOptions(){
                 WriteIndented = true,
                 PropertyNameCaseInsensitive = true
             });
+
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(response.StatusCode);
+
+            return Convert.ToInt32(response.StatusCode);
         }
     }
 }

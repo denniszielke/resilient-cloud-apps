@@ -32,16 +32,6 @@ module cosmosdbsql 'cosmosdb-sql.bicep' = {
   }
 }
 
-// module cosmosdbtable 'cosmosdb-table.bicep' = {
-//   name: 'cosmosdbtable'
-//   params: {
-//     location: location
-//     cosmosdbAccountName: 'dbt${projectName}'
-//     cosmosdbTableName: 'messages'
-//     autoscaleMaxThroughput: 400
-//   }
-// }
-
 module storage 'storage.bicep' = {
   name: 'storage'
   params: {

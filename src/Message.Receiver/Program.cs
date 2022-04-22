@@ -8,6 +8,7 @@ using Microsoft.Extensions.Azure;
 using Message.Receiver.Background;
 using Polly;
 using Message.Receiver.Clients;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,9 @@ builder.Services.AddLogging(config =>
     config.AddDebug();
     config.AddConsole();
 });
+
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
 
 builder.Services.Configure<JsonOptions>(options =>
 {

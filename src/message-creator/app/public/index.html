@@ -63,11 +63,17 @@
     function initAppInsights(insightsKey){
         var snippet = {
             config: {
-                instrumentationKey: insightsKey
+                connectionString: insightsKey
             }
         };
         var init = new Microsoft.ApplicationInsights.ApplicationInsights(snippet);
         var appInsights = init.loadAppInsights();
+        appInsights.addTelemetryInitializer((envelope) => {
+            envelope.tags = envelope.tags || [];
+            envelope.tags.push({ "ai.cloud.role": "message-creator-ui" });
+            // envelope.tags["ai.cloud.role"] = "your role name";
+            // envelope.tags["ai.cloud.roleInstance"] = "your role instance";
+        });
         appInsights.trackPageView();
     }
     </script>
