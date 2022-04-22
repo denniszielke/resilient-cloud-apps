@@ -19,5 +19,11 @@ namespace Message.Receiver.Controllers {
         {
             return "Pong!";
         }
+
+        [HttpGet(Name = "getversion")]
+        public string GetVersion()
+        {
+            return Environment.GetEnvironmentVariable("VERSION");
+        }
     }
 }

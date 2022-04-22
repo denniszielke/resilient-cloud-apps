@@ -6,6 +6,18 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build-creator",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/Message.Creator/Message.Creator.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-receiver",
             "command": "dotnet",
             "type": "process",

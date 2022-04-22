@@ -13,19 +13,20 @@
     ],
     "configurations": [
         {
-            "type": "pwa-node",
-            "request": "launch",
             "name": "Creator",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/message-creator/app/app.js",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-creator",
+            "program": "${workspaceFolder}/src/Message.Creator/bin/Debug/net6.0/Message.Creator.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Message.Creator",
+            "stopAtEntry": false,
             "envFile": "${workspaceFolder}/local.env",
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
             },
-        },        
+        },       
         {
             "name": "Receiver",
             "type": "coreclr",
