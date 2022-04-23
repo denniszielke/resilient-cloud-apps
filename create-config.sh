@@ -48,10 +48,10 @@ EVENTHUB_CONNECTIONSTRING=$(az eventhubs namespace authorization-rule keys list 
 EVENTHUB_NAME=$(az eventhubs eventhub show -g $RESOURCE_GROUP -n events --namespace-name evhns-$PROJECT_NAME --query name --output tsv)
 COSMOS_CONNECTIONSTRING=$(az cosmosdb keys list --resource-group $RESOURCE_GROUP --name dbs$PROJECT_NAME --type connection-strings --query "connectionStrings[0].connectionString" -o tsv)
 
-replaces="s/{.applicationinsights}/$AI_CONNECTIONSTRING/;";
-replaces="$replaces s/{.eventHubConnectionString}/$EVENTHUB_CONNECTIONSTRING/; ";
-replaces="$replaces s/{.eventHubName}/$EVENTHUB_NAME/; ";
-replaces="$replaces s/{.blobConnectionString}/$BLOB_CONNECTIONSTRING/; ";
-replaces="$replaces s/{.cosmosConnectionString}/$COSMOS_CONNECTIONSTRING/; ";
+cat template.env > local.env
 
-cat ./template.env | sed -e "$replaces" > local1.env
+echo "ApplicationInsights__ConnectionString=\"$AI_CONNECTIONSTRING\"" >> local.env
+echo "EventHub__EventHubConnectionString=\"$EVENTHUB_CONNECTIONSTRING\"" >> local.env
+echo "EventHub__EventHubName=\"$EVENTHUB_NAME\"" >> local.env
+echo "EventHub__BlobConnectionString=\"$BLOB_CONNECTIONSTRING\"" >> local.env
+echo "ConnectionStrings__CosmosApi=\"$COSMOS_CONNECTIONSTRING\"" >> local.env
