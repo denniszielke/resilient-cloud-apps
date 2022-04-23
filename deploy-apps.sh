@@ -3,13 +3,27 @@
 set -e
 
 # infrastructure deployment properties
-RESOURCE_GROUP="$1"
-PROJECT_NAME="$2" # here enter unique deployment name (ideally short and with letters for global uniqueness)
-REGISTRY_OWNER="$3"
-IMAGE_TAG="$4"
-ENABLE_RATE_LIMITING="$5"
-ENABLE_RETRY="$6"
-ENABLE_BREAKER="$7"
+
+PROJECT_NAME="$1" # here enter unique deployment name (ideally short and with letters for global uniqueness)
+REGISTRY_OWNER="$2"
+IMAGE_TAG="$3"
+ENABLE_RATE_LIMITING="$4"
+ENABLE_RETRY="$5"
+ENABLE_BREAKER="$6"
+
+if [ "$PROJECT_NAME" == "" ]; then
+echo "No project name provided - aborting"
+exit 0;
+fi
+
+if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,8}$ ]]; then
+    echo "project name $PROJECT_NAME is valid"
+else
+    echo "project name $PROJECT_NAME is invalid - only numbers and lower case min 5 and max 8 characters allowed - aborting"
+    exit 0;
+fi
+
+RESOURCE_GROUP="$PROJECT_NAME"
 
 if [ "$ENABLE_RATE_LIMITING" == "" ]; then
     echo "setting rate limiting to false"
