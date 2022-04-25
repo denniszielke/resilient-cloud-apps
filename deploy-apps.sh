@@ -3,10 +3,40 @@
 set -e
 
 # infrastructure deployment properties
-RESOURCE_GROUP="$1"
-PROJECT_NAME="$2" # here enter unique deployment name (ideally short and with letters for global uniqueness)
-REGISTRY_OWNER="$3"
-IMAGE_TAG="$4"
+
+PROJECT_NAME="$1" # here enter unique deployment name (ideally short and with letters for global uniqueness)
+REGISTRY_OWNER="$2"
+IMAGE_TAG="$3"
+ENABLE_RATE_LIMITING="$4"
+ENABLE_RETRY="$5"
+ENABLE_BREAKER="$6"
+
+if [ "$PROJECT_NAME" == "" ]; then
+echo "No project name provided - aborting"
+exit 0;
+fi
+
+if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,8}$ ]]; then
+    echo "project name $PROJECT_NAME is valid"
+else
+    echo "project name $PROJECT_NAME is invalid - only numbers and lower case min 5 and max 8 characters allowed - aborting"
+    exit 0;
+fi
+
+RESOURCE_GROUP="$PROJECT_NAME"
+
+if [ "$ENABLE_RATE_LIMITING" == "" ]; then
+    echo "setting rate limiting to false"
+    ENABLE_RATE_LIMITING=false
+fi
+if [ "$ENABLE_RETRY" == "" ]; then
+    echo "setting retry to false"
+    ENABLE_RETRY=false
+fi
+if [ "$ENABLE_BREAKER" == "" ]; then
+    echo "setting breaker to false"
+    ENABLE_BREAKER=false
+fi
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
 
@@ -77,6 +107,9 @@ kubectl apply -f ./deploy-k8s/svc-message-sink.yaml
 
 replaces="s/{.registry}/$REGISTRY_OWNER/;";
 replaces="$replaces s/{.tag}/$IMAGE_TAG/; ";
+replaces="$replaces s/{.enableRateLimiting}/$ENABLE_RATE_LIMITING/; ";
+replaces="$replaces s/{.enableRetry}/$ENABLE_RETRY/; ";
+replaces="$replaces s/{.enableBreaker}/$ENABLE_BREAKER/; ";
 
 cat ./deploy-k8s/depl-message-creator.yaml | sed -e "$replaces" | kubectl apply -f -
 cat ./deploy-k8s/depl-message-receiver.yaml | sed -e "$replaces" | kubectl apply -f -
@@ -92,4 +125,4 @@ else
 fi
 
 helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing \ 
-    --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5
+    --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait

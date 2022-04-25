@@ -14,7 +14,7 @@ param cosmosdbAccountName string
 param cosmosdbDatabaseName string
 
 @description('The container for the database')
-param containerNameName string = 'data'
+param containerName string = 'data'
 
 
 resource cosmosDB 'Microsoft.DocumentDB/databaseAccounts@2021-01-15' = {

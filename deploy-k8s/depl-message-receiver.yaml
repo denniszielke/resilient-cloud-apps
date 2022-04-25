@@ -32,22 +32,24 @@ spec:
           periodSeconds: 5
         resources:
           requests:
-            memory: "200Mi"
-            cpu: "200m"
+            memory: "1000Mi"
+            cpu: "1000m"
           limits:
-            memory: "400Mi"
-            cpu: "400m"
+            memory: "2000Mi"
+            cpu: "2000m"
         env: 
           - name: "PORT"
             value: "8080"
+          - name: "VERSION"
+            value: "{.version}"
           - name: "ASPNETCORE_URLS"
             value: "http://+:8080"
           - name: "SINK_URL"
-            value: "http://message-sink/api/message/receive/"
-          - name: "SINK_WITH_RETRY_URL"
-            value: "http://message-sink/api/message/receive/"
-          - name: "SINK_WITH_CIRCUITBREAKER_URL"
-            value: "http://message-sink/api/message/receive/"
+            value: "http://message-sink/"
+          - name: "HttpClient__EnableRetry"
+            value: "{.enableRetry}"
+          - name: "HttpClient__EnableBreaker"
+            value: "{.enableBreaker}"
           - name: "EventHub__EventHubName"
             valueFrom:
               secretKeyRef:

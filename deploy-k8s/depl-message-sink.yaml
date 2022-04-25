@@ -32,17 +32,21 @@ spec:
           periodSeconds: 5
         resources:
           requests:
-            memory: "200Mi"
-            cpu: "200m"
+            memory: "1000Mi"
+            cpu: "1000m"
           limits:
-            memory: "400Mi"
-            cpu: "400m"
+            memory: "2000Mi"
+            cpu: "2000m"
         env: 
           - name: "PORT"
             value: "8080"
+          - name: "VERSION"
+            value: "{.version}"
           - name: "ASPNETCORE_URLS"
             value: "http://+:8080"
-          - name: "ConnectionStrings__CosmosTableApi"
+          - name: "IpRateLimiting__EnableEndpointRateLimiting"
+            value: "{.enableRateLimiting}"
+          - name: "ConnectionStrings__CosmosApi"
             valueFrom:
               secretKeyRef:
                 name: appconfig

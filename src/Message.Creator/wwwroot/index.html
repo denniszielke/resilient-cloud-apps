@@ -35,10 +35,6 @@
                         <label for="instancename" style="width:200px">Message:</label>
                         <input type="text" ng-model="message" maxlength="16" value="azureuser" width="300">
                     </p>
-                    <!-- <p>
-                        <button class="btn btn-lg btn-success" ng-click="SendStatus(0)" type="button" id="Status0" value="Send Status 0">Send Status 0</button>
-                        <button class="btn btn-lg btn-success" ng-click="SendStatus(1)" type="button" id="Status1" value="Send Status 1">Send Status 1</button>
-                    </p> -->
                     <p>
                         <label>
                         <input type="checkbox" ng-model="loop" value"loop" checked="true" name="loop">keep posting in a loop</input>
@@ -54,6 +50,28 @@
                 <div class="row">
                     <h2>Result</h2>
                     <p class="bg-info">{{ result }}</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                            <th scope="col">Milliseconds</th>
+                            <th scope="col">HttpStatus</th>
+                            <th scope="col">Host</th>
+                            <th scope="col">Receiver</th>
+                            <th scope="col">Sink</th>
+                            <th scope="col">CosmosDB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="response in responses track by $index">
+                          <td ng-class="CalculateCssClass(response.status)">{{ response.duration }}</td>
+                          <td ng-class="CalculateCssClass(response.status)">{{ response.status }}</td>
+                          <td ng-class="CalculateCssClass(response.status)">{{ response.host }}</td>
+                          <td ng-class="CalculateCssClass(response.dependency.status)">{{ response.dependency.host }} {{ response.dependency.sender }} {{ response.dependency.status }} </td>
+                          <td ng-class="CalculateCssClass(response.dependency.dependency.status)">{{ response.dependency.dependency.host }} {{ response.dependency.dependency.sender }} {{ response.dependency.dependency.status }} </td>
+                          <td ng-class="CalculateCssClass(response.dependency.dependency.dependency.status)">{{ response.dependency.dependency.dependency.host }} {{ response.dependency.dependency.dependency.sender }} {{ response.dependency.dependency.dependency.status }} </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

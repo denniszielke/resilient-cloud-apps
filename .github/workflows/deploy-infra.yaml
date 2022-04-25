@@ -2,18 +2,14 @@ name: deploy-infrastructure-with-apps
 on:
   workflow_dispatch:
     inputs:
-      resourceGroup:
-        description: 'Resource Group'     
+      projectName:
+        description: 'Project name'     
         required: true
         default: 'reliabl123'
       location:
         description: 'Azure Region'     
         required: true
         default: 'northeurope'
-      projectName:
-        description: 'Project name'     
-        required: true
-        default: 'reliabl123'
 permissions:
   id-token: write
   contents: read
@@ -34,4 +30,4 @@ jobs:
     - name: 'Run az commands'
       run: |
         chmod +x ./deploy-infra.sh
-        ./deploy-infra.sh ${{ github.event.inputs.resourceGroup }} ${{ github.event.inputs.location }} ${{ github.event.inputs.projectName }}
+        ./deploy-infra.sh ${{ github.event.inputs.projectName }} ${{ github.event.inputs.location }}

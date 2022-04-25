@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Azure;
 using AspNetCoreRateLimit;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
-builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
 builder.Services.AddControllers(options =>
 {
@@ -23,11 +22,8 @@ builder.Services.AddLogging(config => {
     config.AddConsole();
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
 
 builder.Services.Configure<JsonOptions>(options =>
 {
@@ -37,12 +33,16 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 builder.Services.AddOptions();
-builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
-builder.Services.AddInMemoryRateLimiting();
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");
+Console.WriteLine("Rate limiting is set to: " + enableRateLimiting);
 
+if (enableRateLimiting){
+    builder.Services.AddMemoryCache();
+    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+    builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+    builder.Services.AddInMemoryRateLimiting();
+    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+}
 
 builder.Services.AddSingleton( 
     s => {
@@ -64,13 +64,9 @@ builder.Services.AddSingleton<IMessageStorageService, MessageCosmosSqlStorageSer
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.MapControllers();
-app.UseIpRateLimiting();
+
+if (builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting") == true){
+    app.UseIpRateLimiting();
+}
 app.Run();

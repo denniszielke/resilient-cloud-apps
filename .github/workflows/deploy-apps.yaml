@@ -2,10 +2,6 @@ name: deploy-infrastructure-with-apps
 on:
   workflow_dispatch:
     inputs:
-      resourceGroup:
-        description: 'Resource Group'     
-        required: true
-        default: 'reliabl123'
       projectName:
         description: 'Project name'     
         required: true
@@ -30,7 +26,7 @@ jobs:
     - name: 'Run az commands'
       run: |
         chmod +x ./deploy-apps.sh
-        ./deploy-apps.sh ${{ github.event.inputs.resourceGroup }} ${{ github.event.inputs.projectName }} "ghcr.io/${{ github.repository_owner }}/reliable-apps" ${GITHUB_RUN_ID}
+        ./deploy-apps.sh ${{ github.event.inputs.projectName }} "ghcr.io/${{ github.repository_owner }}/reliable-apps" ${GITHUB_RUN_ID}
 
 
 

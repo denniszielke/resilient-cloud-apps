@@ -1,7 +1,8 @@
 using System.Net;
 using System.Text.Json;
 
-namespace Message.Receiver.Clients
+
+namespace Message.Creator.Clients
 {
     public class SinkClient
     {
@@ -14,6 +15,7 @@ namespace Message.Receiver.Clients
             _logger = logger;
         }
 
+
         public async Task<MessageResponse> SendMessageAsync(DeviceMessage message)
         {
             var client = _httpClientFactory.CreateClient("Sink"); 
@@ -24,7 +26,7 @@ namespace Message.Receiver.Clients
                 WriteIndented = true,
                 PropertyNameCaseInsensitive = true
             });
-
+            
             try
             {
                 response.EnsureSuccessStatusCode();
@@ -35,7 +37,7 @@ namespace Message.Receiver.Clients
                     Console.WriteLine(responseBody);
                     var sinkResponse = JsonSerializer.Deserialize<MessageResponse>(responseBody)!;
                     receivedResponse = new MessageResponse(){
-                        Id = message.Id, Status = MessageStatus.Ok, Sender = "message-receiver", Host = Environment.MachineName
+                        Id = message.Id, Status = MessageStatus.Ok, Sender = "message-creator", Host = Environment.MachineName
                     };
                     receivedResponse.Dependency = sinkResponse;
                 }

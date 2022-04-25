@@ -3,13 +3,24 @@
 set -e
 
 # infrastructure deployment properties
-RESOURCE_GROUP="$1"
+PROJECT_NAME="$1"
 LOCATION="$2"
-PROJECT_NAME="$3" # here enter unique deployment name (ideally short and with letters for global uniqueness)
+
+if [ "$PROJECT_NAME" == "" ]; then
+echo "No project name provided - aborting"
+exit 0;
+fi
+
+if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,8}$ ]]; then
+    echo "project name $PROJECT_NAME is valid"
+else
+    echo "project name $PROJECT_NAME is invalid - only numbers and lower case min 5 and max 8 characters allowed - aborting"
+    exit 0;
+fi
+
+RESOURCE_GROUP="$PROJECT_NAME"
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
-
-RESOURCE_GROUP=$DEPLOYMENT_NAME # here enter the resources group
 
 if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
     echo "creating resource group $RESOURCE_GROUP..."

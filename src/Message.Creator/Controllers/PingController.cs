@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Message.Sink.Controllers { 
+namespace Message.Creator.Controllers { 
 
     [ApiController]
     [Route("[controller]")]

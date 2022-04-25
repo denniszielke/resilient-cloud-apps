@@ -9,25 +9,44 @@ We will also show you how you can use **Azure Monitor with Application Insights*
 High Level Architecture:
 ![](/architecture.png)
 
+
+## Deploy Azure resources
+
+```
+PROJECT_NAME="reliabl6"
+LOCATION="northeurope"
+
+bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
+
+```
+
+## Create config file
+```
+PROJECT_NAME="reliabl6"
+bash ./create-config.sh $PROJECT_NAME
+```
+
 ## Launch locally
 - create app insights, eventhub, blob storage
 - adjust environment variables in local.env accordingly
 - launch debug and open http://localhost:3000
 
-## Deploy Azure resources
+
+## Deploy Apps into Cluster
 
 ```
-RESOURCE_GROUP="reliabl6"
+PROJECT_NAME="reliabl6"
 GITHUB_REPO_OWNER="denniszielke"
-LOCATION="northeurope"
+IMAGE_TAG="latest"
+ENABLE_RATE_LIMITING="true"
+ENABLE_RETRY="false"
+ENABLE_BREAKER="false"
 
-az group create --name $RESOURCE_GROUP --location $LOCATION
-
-az deployment group create -g $RESOURCE_GROUP -f ./infrastructure/main.bicep \
--p projectName=$RESOURCE_GROUP \
--p containerRegistryOwner=$GITHUB_REPO_OWNER
+bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
 
 ```
+
+# OPENING / on the UI does not work - YOU HAVE TO USE /index.html
 
 ## Resiliency patterns shown in this sample
 

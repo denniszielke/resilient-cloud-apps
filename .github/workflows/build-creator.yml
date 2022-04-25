@@ -4,18 +4,12 @@ name: build-message-creator
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-    paths:
-      - src/message-creator/**
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: src/message-creator
+    working-directory: src/Message.Receiver
 
 env:
   IMAGE_NAME: message-creator
