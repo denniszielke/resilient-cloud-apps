@@ -24,7 +24,7 @@ bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
 
 ## Create config file
 ```
-PROJECT_NAME="reliabl6"
+PROJECT_NAME="reliabr2"
 bash ./create-config.sh $PROJECT_NAME
 ```
 
@@ -37,7 +37,7 @@ bash ./create-config.sh $PROJECT_NAME
 ## Deploy Apps into Cluster
 
 ```
-PROJECT_NAME="reliabl6"
+PROJECT_NAME="reliabr2"
 GITHUB_REPO_OWNER="denniszielke"
 IMAGE_TAG="latest"
 ENABLE_RATE_LIMITING="true"

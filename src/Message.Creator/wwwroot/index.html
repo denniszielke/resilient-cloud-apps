@@ -80,6 +80,7 @@
 
     </div><!-- /.container -->
     <script type="text/javascript">
+    var globalAppInsights;
     function initAppInsights(insightsKey){
         var snippet = {
             config: {
@@ -99,6 +100,7 @@
             // envelope.tags["ai.cloud.roleInstance"] = "your role instance";
         });
         appInsights.trackPageView();
+        globalAppInsights = appInsights;
     }
     </script>
 </body>

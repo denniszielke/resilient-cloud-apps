@@ -125,6 +125,8 @@ angular.module('SimulatorApp', [])
                     'timestamp': logDateStr
                 }
                 console.log(config.headers);
+
+                globalAppInsights.trackPageView("InvokeRequest");
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
@@ -167,6 +169,8 @@ angular.module('SimulatorApp', [])
                     'timestamp': logDateStr
                 }
                 console.log(config.headers);
+
+                globalAppInsights.trackPageView("PublishMessage");
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
