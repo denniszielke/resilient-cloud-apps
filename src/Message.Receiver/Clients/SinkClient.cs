@@ -27,7 +27,6 @@ namespace Message.Receiver.Clients
 
             try
             {
-                response.EnsureSuccessStatusCode();
                 Console.WriteLine(response.StatusCode);
 
                 if(response.IsSuccessStatusCode){
@@ -40,9 +39,15 @@ namespace Message.Receiver.Clients
                     receivedResponse.Dependency = sinkResponse;
                 }
                 else{
-                    receivedResponse = new MessageResponse(){
-                        Id = message.Id, Status = MessageStatus.Failed, Sender = "message-receiver", Host = Environment.MachineName
-                    };
+                    if (response.StatusCode == HttpStatusCode.TooManyRequests){
+                            receivedResponse = new MessageResponse(){
+                            Id = message.Id, Status = MessageStatus.Throttled, Sender = "message-receiver", Host = Environment.MachineName
+                        };
+                    }else{
+                        receivedResponse = new MessageResponse(){
+                            Id = message.Id, Status = MessageStatus.Failed, Sender = "message-receiver", Host = Environment.MachineName
+                        };
+                    }                    
                 }
             }
             catch (System.Exception ex)
