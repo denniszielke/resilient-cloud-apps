@@ -126,7 +126,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                globalAppInsights.trackPageView("InvokeRequest");
+                globalAppInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId().
+                globalAppInsights.trackEvent({name:"InvokeRequest"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
@@ -170,7 +171,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                globalAppInsights.trackPageView("PublishMessage");
+                globalAppInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId().
+                globalAppInsights.trackEvent({name:"PublishMessage"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
