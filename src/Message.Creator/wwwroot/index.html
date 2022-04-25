@@ -81,7 +81,11 @@
     function initAppInsights(insightsKey){
         var snippet = {
             config: {
-                connectionString: insightsKey
+                connectionString: insightsKey,
+                disableFetchTracking: false,
+                enableCorsCorrelation: true,
+                enableRequestHeaderTracking: true,
+                enableResponseHeaderTracking: true
             }
         };
         var init = new Microsoft.ApplicationInsights.ApplicationInsights(snippet);
