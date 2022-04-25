@@ -1,7 +1,11 @@
 ﻿var apiUrl = '/';
-function loopClick() {
+function loopAsyncClick() {
     console.log(document.getElementById('PublishMessage'));
     document.getElementById('PublishMessage').click();
+};
+function loopSyncClick() {
+    console.log(document.getElementById('InvokeRequest'));
+    document.getElementById('InvokeRequest').click();
 };
 
 function uuidv4() {
@@ -124,13 +128,14 @@ angular.module('SimulatorApp', [])
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
+                        response.sync = "S";
                         response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
                         $scope.responses.splice(0,0,response);
                         console.log("received response:");
                         console.log(response);  
                         if ($scope.loop){
-                            window.setTimeout(loopClick, 500);
+                            window.setTimeout(loopSyncClick, 500);
                         }
                     });
             };
@@ -165,6 +170,7 @@ angular.module('SimulatorApp', [])
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
+                        response.sync = "A";
                         response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
                         $scope.responses.splice(0,0,response);
@@ -189,7 +195,7 @@ angular.module('SimulatorApp', [])
                                 $scope.humidity -= randum;
                                 $scope.temperature += randtm;
                             }
-                            window.setTimeout(loopClick, 500);
+                            window.setTimeout(loopAsyncClick, 500);
                         }
                     });
             };
