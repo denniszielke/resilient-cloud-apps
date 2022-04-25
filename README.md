@@ -62,9 +62,12 @@ bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_L
 ## Walkthrough
 
 1. Opening 9 tabs and start the loop, showing that we are getting **throttled**
+    ![](/img/throttling.png)
 2. Showing source code of sink (program.cs)
 3. Discussing retries, showing retry mechanism in receiver, activating it,
+    ![](/img/retry.png)
 4. Discussing circuit breaker, showing circuit breaker mechanism in receiver, activating it
+    ![](/img/retry.png)
 5. showing AppInsights, with retries
 6. Discussing chaos engineering, showing Chaos Studio and start experiment
 7. Show dashboard, show numbers
