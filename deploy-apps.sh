@@ -107,6 +107,7 @@ kubectl apply -f ./deploy-k8s/svc-message-sink.yaml
 
 replaces="s/{.registry}/$REGISTRY_OWNER/;";
 replaces="$replaces s/{.tag}/$IMAGE_TAG/; ";
+replaces="$replaces s/{.version}/$IMAGE_TAG/; ";
 replaces="$replaces s/{.enableRateLimiting}/$ENABLE_RATE_LIMITING/; ";
 replaces="$replaces s/{.enableRetry}/$ENABLE_RETRY/; ";
 replaces="$replaces s/{.enableBreaker}/$ENABLE_BREAKER/; ";
