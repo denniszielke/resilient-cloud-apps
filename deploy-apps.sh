@@ -115,6 +115,10 @@ cat ./deploy-k8s/depl-message-creator.yaml | sed -e "$replaces" | kubectl apply 
 cat ./deploy-k8s/depl-message-receiver.yaml | sed -e "$replaces" | kubectl apply -f -
 cat ./deploy-k8s/depl-message-sink.yaml | sed -e "$replaces" | kubectl apply -f -
 
+kubectl apply -f ./deploy-k8s/hpa-message-creator.yaml
+kubectl apply -f ./deploy-k8s/hpa-message-receiver.yaml
+kubectl apply -f ./deploy-k8s/hpa-message-sink.yaml
+
 kubectl apply -f ./deploy-k8s/ingress.yaml
 
 if kubectl get namespace chaos-testing; then

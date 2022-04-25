@@ -6,6 +6,13 @@ metadata:
     app: message-sink
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: message-sink

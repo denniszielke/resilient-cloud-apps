@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="l_3EztwkF13Zctmzr-sn" name="Page-1">
-        <mxGraphModel dx="1017" dy="324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="887" dy="494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -21,7 +21,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="4" value="Message-Creator&lt;br&gt;[js/Node.js]" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/containers/Container_Instances.svg;" parent="1" vertex="1">
+                <mxCell id="4" value="Message-Creator &lt;br&gt;[C#]" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/containers/Container_Instances.svg;" parent="1" vertex="1">
                     <mxGeometry x="40" y="279.81" width="60" height="64.69" as="geometry"/>
                 </mxCell>
                 <mxCell id="9" value="Receive Event" style="edgeStyle=none;html=1;" parent="1" source="7" target="2" edge="1">
@@ -60,6 +60,9 @@
                 </mxCell>
                 <mxCell id="25" value="Browser Session" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#505050;shape=mxgraph.mscae.intune.device_history" parent="1" vertex="1">
                     <mxGeometry x="47.5" y="510" width="45" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Rate Limit" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#0080F0;shadow=0;dashed=0;shape=mxgraph.ios7.icons.privacy;" vertex="1" parent="1">
+                    <mxGeometry x="460" y="240" width="16.8" height="28.5" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

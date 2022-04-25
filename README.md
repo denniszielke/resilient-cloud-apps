@@ -27,9 +27,9 @@ bash ./create-config.sh $PROJECT_NAME
 ```
 
 ## Launch locally
-- create app insights, eventhub, blob storage
-- adjust environment variables in local.env accordingly
-- launch debug and open http://localhost:3000
+- create azure resources by running infra script 
+- create local config by running create config script or adjust environment variables in local.env accordingly
+- launch debug and open http://localhost:5025
 
 
 ## Deploy Apps into Cluster
@@ -45,8 +45,6 @@ ENABLE_BREAKER="false"
 bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
 
 ```
-
-# OPENING / on the UI does not work - YOU HAVE TO USE /index.html
 
 ## Resiliency patterns shown in this sample
 
