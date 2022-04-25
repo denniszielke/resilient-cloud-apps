@@ -128,5 +128,4 @@ else
   echo -e "Namespace chaos-testing created."
 fi
 
-helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing \ 
-    --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait
+helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait
