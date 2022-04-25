@@ -31,6 +31,28 @@ angular.module('SimulatorApp', [])
     .controller('SimulatorController',
         function ($scope, $http) {
 
+            $scope.InitAppInsights = function (insightsKey) {
+                var snippet = {
+                    config: {
+                        connectionString: insightsKey,
+                        disableFetchTracking: false,
+                        enableCorsCorrelation: true,
+                        enableRequestHeaderTracking: true,
+                        enableResponseHeaderTracking: true
+                    }
+                };
+                var init = new Microsoft.ApplicationInsights.ApplicationInsights(snippet);
+                var appInsights = init.loadAppInsights();
+                appInsights.addTelemetryInitializer((envelope) => {
+                    envelope.tags = envelope.tags || [];
+                    envelope.tags.push({ "ai.cloud.role": "message-creator-ui" });
+                    // envelope.tags["ai.cloud.role"] = "your role name";
+                    // envelope.tags["ai.cloud.roleInstance"] = "your role instance";
+                });
+                appInsights.trackPageView();
+                $scope.appInsights = appInsights;
+            };
+
             $scope.Init = function () {             
                 var getUrl = apiUrl + 'getappinsightskey';
                 var config = {
@@ -43,7 +65,7 @@ angular.module('SimulatorApp', [])
                     .success(function (response) { 
                         $scope.appInsightsKey = response;
                         console.log(response);
-                        initAppInsights($scope.appInsightsKey);
+                        $scope.InitAppInsights($scope.appInsightsKey);
                     }); 
 
             };
@@ -126,8 +148,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                window.globalAppInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId().
-                window.globalAppInsights.trackEvent({name:"InvokeRequest"});
+                $scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
+                $scope.appInsights.trackEvent({name:"InvokeRequest"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
@@ -171,8 +193,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                window.globalAppInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId().
-                window.globalAppInsights.trackEvent({name:"PublishMessage"});
+                $scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
+                $scope.appInsights.trackEvent({name:"PublishMessage"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
