@@ -129,3 +129,6 @@ else
 fi
 
 helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait
+
+echo "exposed nginx ingress on this ip:"
+kubectl --namespace ingress get services -o wide nginx-ingress-ingress-nginx-controller

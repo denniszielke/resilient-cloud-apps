@@ -4,9 +4,9 @@ metadata:
   name: ca-sink-creator
 spec:
   maxReplicas: 10
-  minReplicas: 3
+  minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: message-sink-app
-  targetCPUUtilizationPercentage: 30
+  targetCPUUtilizationPercentage: 20

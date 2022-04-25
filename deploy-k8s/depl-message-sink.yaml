@@ -5,7 +5,7 @@ metadata:
   labels:
     app: message-sink
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -39,11 +39,11 @@ spec:
           periodSeconds: 5
         resources:
           requests:
-            memory: "1000Mi"
-            cpu: "1000m"
+            memory: "250Mi"
+            cpu: "200m"
           limits:
-            memory: "2000Mi"
-            cpu: "2000m"
+            memory: "500Mi"
+            cpu: "300m"
         env: 
           - name: "PORT"
             value: "8080"
