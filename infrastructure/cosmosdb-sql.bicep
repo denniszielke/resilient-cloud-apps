@@ -45,9 +45,34 @@ resource cosmosDBSql 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-01
     }
     options: {
       throughput: autoscaleMaxThroughput
-      // autoscaleSettings: {
-      //   maxThroughput: autoscaleMaxThroughput
-      // }
+    }
+  }
+}
+
+resource accountName_databaseName_containerName 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-04-15' = {
+  parent: cosmosDBSql
+  name: containerName
+  properties: {
+    resource: {
+      id: containerName
+      partitionKey: {
+        paths: [
+          '/id'
+        ]
+        kind:  'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+      }
+    }
+    options: {
+      throughput: autoscaleMaxThroughput
     }
   }
 }
