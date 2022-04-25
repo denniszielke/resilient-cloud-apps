@@ -147,13 +147,17 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
   }
 }
 
-var roleDefinitionResourceId = '0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8' // Azure Kubernetes Service Cluster Admin Role
+@description('This is the built-in Azure Kubernetes Service Cluster Admin Role role.')
+resource aksClusterAdminRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: '0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8'
+}
 
 resource chaosRoleAssign 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
-  name: guid(aks.id, roleDefinitionResourceId)
+  name: guid(aks.id, aksClusterAdminRoleDefinition.id)
   scope: aks
   properties: {
-    roleDefinitionId: roleDefinitionResourceId 
+    roleDefinitionId: aksClusterAdminRoleDefinition.id
     principalId: aksChaosExperiment.identity.principalId
     principalType: 'ServicePrincipal'
   }
