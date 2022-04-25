@@ -11,10 +11,12 @@ High Level Architecture:
 
 
 ## Deploy Azure resources
+Possible reagions (Azure Chaos Studio Preview restriction):  
+'westcentralus,eastus,westus,centralus,uksouth,westeurope,japaneast,northcentralus,eastus2'
 
 ```
 PROJECT_NAME="reliabl6"
-LOCATION="northeurope"
+LOCATION="westus"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
 
