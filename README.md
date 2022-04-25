@@ -50,8 +50,6 @@ bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_L
 
 ## Resiliency patterns shown in this sample
 
-* [**Health Endpoint Monitoring**](https://docs.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring)  
-  Implement functional checks in an application that external tools can access through exposed endpoints at regular intervals
 * [**Queue-Based Load Leveling**](https://docs.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling)   
   Use a queue that acts as a buffer between a task and a service that it invokes, to smooth intermittent heavy loads
 * [**Throttling**](https://docs.microsoft.com/en-us/azure/architecture/patterns/throttling)  
@@ -60,3 +58,14 @@ bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_L
   Handle faults that might take a variable amount of time to fix when connecting to a remote service or resource
 * [**Retry**](https://docs.microsoft.com/en-us/azure/architecture/patterns/retry)  
   Enable an application to handle anticipated, temporary failures when it tries to connect to a service or network resource by transparently retrying an operation that's previously failed
+
+## Walkthrough
+
+1. Opening 9 tabs and start the loop, showing that we are getting **throttled**
+2. Showing source code of sink (program.cs)
+3. Discussing retries, showing retry mechanism in receiver, activating it,
+4. Discussing circuit breaker, showing circuit breaker mechanism in receiver, activating it
+5. showing AppInsights, with retries
+6. Discussing chaos engineering, showing Chaos Studio and start experiment
+7. Show dashboard, show numbers
+8. Discuss fail fast, discuss Queue-Based Load Leveling
