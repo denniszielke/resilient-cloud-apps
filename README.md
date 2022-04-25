@@ -69,6 +69,7 @@ bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_L
 4. Discussing circuit breaker, showing circuit breaker mechanism in receiver, activating it
     ![](/img/retry.png)
 5. showing AppInsights, with retries
+      ![](/img/appmap.png)
 6. Discussing chaos engineering, showing Chaos Studio and start experiment
 7. Show dashboard, show numbers
 8. Discuss fail fast, discuss Queue-Based Load Leveling
