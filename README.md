@@ -11,10 +11,12 @@ High Level Architecture:
 
 
 ## Deploy Azure resources
+Possible reagions (Azure Chaos Studio Preview restriction):  
+'westcentralus,eastus,westus,centralus,uksouth,westeurope,japaneast,northcentralus,eastus2'
 
 ```
 PROJECT_NAME="reliabl6"
-LOCATION="northeurope"
+LOCATION="westus"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
 
@@ -42,7 +44,7 @@ ENABLE_RATE_LIMITING="true"
 ENABLE_RETRY="false"
 ENABLE_BREAKER="false"
 
-bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
+bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
 
 ```
 

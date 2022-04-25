@@ -5,6 +5,7 @@ param clusterName string
 
 param vmSize string = 'standard_d2s_v3'
 
+#disable-next-line BCP081
 resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
   name: clusterName
   location: location
@@ -93,27 +94,27 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
         targets: [
           {
             type: 'ChaosTarget'
-            id: aks.id
+            id: aksChaosMesh.id
           }
         ]
       }
     ]
     steps: [
       {
-        name: 'Step 1'
+        name: 'HTTP chaos at sink'
         branches: [
           {
-            name: 'Branch 1'
+            name: 'HTTP chaos at sink'
             actions: [
               {
                 type: 'continuous'
-                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:httpChaos/2.1'
-                duration: 'PT10M'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:HTTPChaos/2.1'
+                duration: 'PT2M'
                 selectorId: 'SelectorAKS'
                 parameters: [
                     {
                         key: 'jsonSpec'
-                        value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"target":"Request","port":80,"method":"GET","path":"/api","abort":true,"duration":"5m","scheduler":{"cron":"@every 10m"}}'
+                        value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"target":"Request","port":80,"method":"GET","path":"/api","abort":true,"duration":"120s"}'
                     }
                 ]
               }
@@ -122,20 +123,20 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
         ]
       }
       {
-        name: 'AKS pod kill'
+        name: 'Pod kill of sink'
         branches: [
           {
-            name: 'AKS pod kill'
+            name: 'Pod kill of sink'
             actions: [
               {
                 type: 'continuous'
                 name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1'
-                duration: 'PT10M'
+                duration: 'PT2M'
                 selectorId: 'SelectorAKS'
                 parameters: [
                   {
                       key: 'jsonSpec'
-                      value: '{"action":"pod-failure","mode":"all","duration":"600s","selector":{"namespaces":["default"]}}'
+                      value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"action":"pod-failure","duration":"120s",}'
                   }
                 ]
               }
