@@ -124,6 +124,7 @@ angular.module('SimulatorApp', [])
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
+                        response.sync = "S";
                         response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
                         $scope.responses.splice(0,0,response);
@@ -165,6 +166,7 @@ angular.module('SimulatorApp', [])
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
+                        response.sync = "A";
                         response.duration = endDate - $scope.requeststartDate
                         $scope.result = response;
                         $scope.responses.splice(0,0,response);

@@ -53,8 +53,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                            <th scope="col">Milliseconds</th>
+                            <th scope="col">Type</th>
                             <th scope="col">HttpStatus</th>
+                            <th scope="col">Milliseconds</th>                            
                             <th scope="col">Host</th>
                             <th scope="col">Receiver</th>
                             <th scope="col">Sink</th>
@@ -63,8 +64,9 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="response in responses track by $index">
-                          <td ng-class="CalculateCssClass(response.status)">{{ response.duration }}</td>
+                          <td ng-class="CalculateCssClass(response.status)">{{ response.sync }}</td>
                           <td ng-class="CalculateCssClass(response.status)">{{ response.status }}</td>
+                          <td ng-class="CalculateCssClass(response.status)">{{ response.duration }}</td>                          
                           <td ng-class="CalculateCssClass(response.status)">{{ response.host }}</td>
                           <td ng-class="CalculateCssClass(response.dependency.status)">{{ response.dependency.host }} {{ response.dependency.sender }} {{ response.dependency.status }} </td>
                           <td ng-class="CalculateCssClass(response.dependency.dependency.status)">{{ response.dependency.dependency.host }} {{ response.dependency.dependency.sender }} {{ response.dependency.dependency.status }} </td>
