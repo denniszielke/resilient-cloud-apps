@@ -66,7 +66,7 @@ var app = builder.Build();
 
 app.MapControllers();
 
-if (builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting") == true){
+if (enableRateLimiting){
     app.UseIpRateLimiting();
 }
 app.Run();

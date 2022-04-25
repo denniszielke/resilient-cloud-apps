@@ -110,15 +110,4 @@ options.DefaultFileNames.Clear();
 options.DefaultFileNames.Add("index.html");
 app.UseDefaultFiles(options);
 
-// app.Use(async (context, next) =>
-// {
-//     if (context.Request.Path.Equals("/", StringComparison.OrdinalIgnoreCase))
-//     {
-//         context.Response.Redirect("/index.html");
-//         return;
-//     }
-
-//     await next();
-// });
-
 app.Run();
