@@ -14,6 +14,13 @@ namespace Message.Creator.Controllers {
             _logger = logger;
         }
 
+        [HttpGet("/", Name = "default")]
+        public RedirectResult Index()
+        {
+            return new RedirectResult(url: "/index.html", permanent: true,
+                             preserveMethod: true);
+        }
+
         [HttpGet("/getappinsightskey", Name = "getappinsightskey")]
         public string GetAppInsightsKey()
         {
