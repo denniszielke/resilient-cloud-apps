@@ -80,6 +80,10 @@ public class MessageCosmosSqlStorageService : IMessageStorageService
         {
             return null;
         }
+        catch (Exception ex)
+        {
+            return null;
+        }
         return result;
     }
 
@@ -138,13 +142,12 @@ public class MessageCosmosSqlStorageService : IMessageStorageService
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
         {
             status = MessageStatus.Throttled;
-            _logger.LogInformation("Insert of item consumed {0} request units", response.RequestCharge);
+            _logger.LogError(ex, ex.Message);
         }
         catch (CosmosException ex)
         {
             status = MessageStatus.Failed;
-            _logger.LogError(ex.Message);
-            _logger.LogInformation("Insert of item consumed {0} request units", response.RequestCharge);
+            _logger.LogError(ex, ex.Message);
         }
         catch (System.Exception ex)
         {

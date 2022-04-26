@@ -52,7 +52,7 @@ spec:
           - name: "ASPNETCORE_URLS"
             value: "http://+:8080"
           - name: "SINK_URL"
-            value: "http://message-sink/"
+            value: "http://message-sink/api/message/receive"
           - name: "HttpClient__EnableRetry"
             value: "{.enableRetry}"
           - name: "HttpClient__EnableBreaker"
