@@ -13,6 +13,15 @@ module logging 'logging.bicep' = {
   }
 }
 
+module workbook 'workbook.bicep' = {
+  name: 'workbook'
+  params: {
+    location: location
+    workbookDisplayName: 'reliable-apps-new'
+    workbookSourceId: logging.outputs.appInsightsId
+  }
+}
+
 module eventhub 'eventhub.bicep' = {
   name: 'eventhub'
   params: {
