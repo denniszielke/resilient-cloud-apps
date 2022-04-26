@@ -17,7 +17,8 @@ builder.Services.AddControllers(options =>
     options.RespectBrowserAcceptHeader = true;
 });
 
-builder.Services.AddLogging(config => {
+builder.Services.AddLogging(config =>
+{
     config.AddDebug();
     config.AddConsole();
 });
@@ -36,7 +37,8 @@ builder.Services.AddOptions();
 bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");
 Console.WriteLine("Rate limiting is set to: " + enableRateLimiting);
 
-if (enableRateLimiting){
+if (enableRateLimiting)
+{
     builder.Services.AddMemoryCache();
     builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
     builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
@@ -44,29 +46,28 @@ if (enableRateLimiting){
     builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 }
 
-builder.Services.AddSingleton( 
-    s => {
+builder.Services.AddSingleton(
+    s =>
+    {
         return new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(builder.Configuration.GetConnectionString("CosmosApi"))
-        .WithSerializerOptions( new Microsoft.Azure.Cosmos.CosmosSerializationOptions( ){
-            PropertyNamingPolicy = Microsoft.Azure.Cosmos.CosmosPropertyNamingPolicy.CamelCase               
-        }).WithBulkExecution(false)
-        .WithThrottlingRetryOptions( TimeSpan.FromSeconds(1), 1)
+            .WithSerializerOptions(new Microsoft.Azure.Cosmos.CosmosSerializationOptions()
+            {
+                PropertyNamingPolicy = Microsoft.Azure.Cosmos.CosmosPropertyNamingPolicy.CamelCase
+            })
+            .WithBulkExecution(false)
+            .WithThrottlingRetryOptions(TimeSpan.FromSeconds(1), 1)
             .Build();
     }
 );
 
-// builder.Services.AddAzureClients( b => { 
-//     b.AddTableServiceClient(builder.Configuration.GetConnectionString("CosmosTableApi"));
-// });
-
 builder.Services.AddSingleton<IMessageStorageService, MessageCosmosSqlStorageService>();
-// builder.Services.AddSingleton<IMessageStorageService, MessageStorageService>();
 
 var app = builder.Build();
 
 app.MapControllers();
 
-if (enableRateLimiting){
+if (enableRateLimiting)
+{
     app.UseIpRateLimiting();
 }
 app.Run();
