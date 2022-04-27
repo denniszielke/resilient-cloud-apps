@@ -39,11 +39,11 @@ spec:
           periodSeconds: 5
         resources:
           requests:
-            memory: "250Mi"
-            cpu: "200m"
+            memory: "400Mi"
+            cpu: "500m"
           limits:
-            memory: "500Mi"
-            cpu: "300m"
+            memory: "700Mi"
+            cpu: "800m"
         env: 
           - name: "PORT"
             value: "8080"

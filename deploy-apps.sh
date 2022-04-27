@@ -60,6 +60,25 @@ echo "getting kubeconfig for cluster $KUBE_NAME"
 
 az aks get-credentials --resource-group=$RESOURCE_GROUP --name=$KUBE_NAME --admin
 
+CONTROLLER_ID=$(az aks show -g $RESOURCE_GROUP -n $KUBE_NAME --query identity.principalId -o tsv)
+echo "controller id is $CONTROLLER_ID"
+NODE_GROUP=$(az aks show -g $RESOURCE_GROUP -n $KUBE_NAME --query nodeResourceGroup -o tsv)
+ 
+IP_ID=$(az network public-ip list -g $NODE_GROUP --query "[?contains(name, '$PROJECT_NAME')].id" -o tsv)
+if [ "$IP_ID" == "" ]; then
+    echo "creating ingress ip $NODE_GROUP"
+    az network public-ip create -g $NODE_GROUP -n $PROJECT_NAME --sku STANDARD --dns-name $KUBE_NAME -o none
+    IP_ID=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query id)
+    IP=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query ipAddress)
+    DNS=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query dnsSettings.fqdn)
+    echo "created ip $IP_ID with $IP on $DNS"
+    az role assignment create --role "Contributor" --assignee $CONTROLLER_ID --scope $IP_ID -o none
+else
+    IP=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query ipAddress)
+    DNS=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query dnsSettings.fqdn)
+    echo "created ip $IP on $DNS"
+fi
+
 AI_CONNECTIONSTRING=$(az resource show -g $RESOURCE_GROUP -n appi-$PROJECT_NAME --resource-type "Microsoft.Insights/components" --query properties.ConnectionString -o tsv | tr -d '[:space:]')
 BLOB_CONNECTIONSTRING=$(az storage account show-connection-string --name st$PROJECT_NAME --resource-group $RESOURCE_GROUP --query "connectionString" -o tsv)
 EVENTHUB_CONNECTIONSTRING=$(az eventhubs namespace authorization-rule keys list --name RootManageSharedAccessKey --namespace-name evhns-$PROJECT_NAME --resource-group $RESOURCE_GROUP --query "primaryConnectionString" | tr -d '"')
@@ -91,7 +110,10 @@ helm upgrade nginx-ingress ingress-nginx/ingress-nginx --install \
     --set controller.replicaCount=3 \
     --set controller.metrics.enabled=true \
     --set defaultBackend.enabled=true \
+    --set controller.service.loadBalancerIP="$IP" \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz  \
     --set controller.service.externalTrafficPolicy=Local --wait
+
 
 kubectl create secret generic appconfig \
    --from-literal=applicationInsightsConnectionString=$AI_CONNECTIONSTRING \
@@ -111,6 +133,7 @@ replaces="$replaces s/{.version}/$IMAGE_TAG/; ";
 replaces="$replaces s/{.enableRateLimiting}/$ENABLE_RATE_LIMITING/; ";
 replaces="$replaces s/{.enableRetry}/$ENABLE_RETRY/; ";
 replaces="$replaces s/{.enableBreaker}/$ENABLE_BREAKER/; ";
+replaces="$replaces s/{.dns}/$DNS/; ";
 
 cat ./deploy-k8s/depl-message-creator.yaml | sed -e "$replaces" | kubectl apply -f -
 cat ./deploy-k8s/depl-message-receiver.yaml | sed -e "$replaces" | kubectl apply -f -
@@ -120,7 +143,7 @@ kubectl apply -f ./deploy-k8s/hpa-message-creator.yaml
 kubectl apply -f ./deploy-k8s/hpa-message-receiver.yaml
 kubectl apply -f ./deploy-k8s/hpa-message-sink.yaml
 
-kubectl apply -f ./deploy-k8s/ingress.yaml
+cat ./deploy-k8s/ingress.yaml | sed -e "$replaces" | kubectl apply -f -
 
 if kubectl get namespace chaos-testing; then
   echo -e "Namespace chaos-testing found."
@@ -133,3 +156,6 @@ helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing --set c
 
 echo "exposed nginx ingress on this ip:"
 kubectl --namespace ingress get services -o wide nginx-ingress-ingress-nginx-controller
+
+echo "deployed app into:"
+echo $DNS
