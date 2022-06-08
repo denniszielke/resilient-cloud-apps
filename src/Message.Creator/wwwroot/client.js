@@ -148,8 +148,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                $scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
-                $scope.appInsights.trackEvent({name:"InvokeRequest"});
+                //$scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
+                //$scope.appInsights.trackEvent({name:"InvokeRequest"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
@@ -193,8 +193,8 @@ angular.module('SimulatorApp', [])
                 }
                 console.log(config.headers);
 
-                $scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
-                $scope.appInsights.trackEvent({name:"PublishMessage"});
+                //$scope.appInsights.properties.context.telemetryTrace.traceID = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
+                //$scope.appInsights.trackEvent({name:"PublishMessage"});
                 $http.post(postUrl, body, config)
                     .success(function (response) { 
                         var endDate = new Date();
