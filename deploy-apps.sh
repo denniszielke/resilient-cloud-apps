@@ -16,7 +16,7 @@ echo "No project name provided - aborting"
 exit 0;
 fi
 
-if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,8}$ ]]; then
+if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,9}$ ]]; then
     echo "project name $PROJECT_NAME is valid"
 else
     echo "project name $PROJECT_NAME is invalid - only numbers and lower case min 5 and max 8 characters allowed - aborting"
@@ -64,19 +64,17 @@ CONTROLLER_ID=$(az aks show -g $RESOURCE_GROUP -n $KUBE_NAME --query identity.pr
 echo "controller id is $CONTROLLER_ID"
 NODE_GROUP=$(az aks show -g $RESOURCE_GROUP -n $KUBE_NAME --query nodeResourceGroup -o tsv)
  
-IP_ID=$(az network public-ip list -g $NODE_GROUP --query "[?contains(name, '$PROJECT_NAME')].id" -o tsv)
-if [ "$IP_ID" == "" ]; then
-    echo "creating ingress ip $NODE_GROUP"
-    az network public-ip create -g $NODE_GROUP -n $PROJECT_NAME --sku STANDARD --dns-name $KUBE_NAME -o none
-    IP_ID=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query id)
-    IP=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query ipAddress)
-    DNS=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query dnsSettings.fqdn)
-    echo "created ip $IP_ID with $IP on $DNS"
-    az role assignment create --role "Contributor" --assignee $CONTROLLER_ID --scope $IP_ID -o none
+IP_ID=$(az network public-ip list -g $NODE_GROUP --query '[?tags."k8s-azure-service"].id' -o tsv)
+IP_NAME=$(az network public-ip list -g $NODE_GROUP --query '[?tags."k8s-azure-service"].name' -o tsv)
+DNS=$(az network public-ip show -g $NODE_GROUP -n $IP_NAME -o tsv --query dnsSettings.fqdn)
+
+if [ "$DNS" == "" ]; then
+    echo "update ingress ip $NODE_GROUP dns"
+    az network public-ip update -g $NODE_GROUP -n $IP_NAME --dns-name $PROJECT_NAME -o none
+    DNS=$(az network public-ip show -g $NODE_GROUP -n $IP_NAME -o tsv --query dnsSettings.fqdn)
+    echo "update webrouting ip $IP_ID with $IP on $DNS"
 else
-    IP=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query ipAddress)
-    DNS=$(az network public-ip show -g $NODE_GROUP -n $PROJECT_NAME -o tsv --query dnsSettings.fqdn)
-    echo "created ip $IP on $DNS"
+    echo "found webrouting ip $IP on $DNS"
 fi
 
 AI_CONNECTIONSTRING=$(az resource show -g $RESOURCE_GROUP -n appi-$PROJECT_NAME --resource-type "Microsoft.Insights/components" --query properties.ConnectionString -o tsv | tr -d '[:space:]')
@@ -104,16 +102,6 @@ else
   kubectl create namespace ingress
   echo -e "Namespace ingress created."
 fi
-
-helm upgrade nginx-ingress ingress-nginx/ingress-nginx --install \
-    --namespace ingress \
-    --set controller.replicaCount=3 \
-    --set controller.metrics.enabled=true \
-    --set defaultBackend.enabled=true \
-    --set controller.service.loadBalancerIP="$IP" \
-    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz  \
-    --set controller.service.externalTrafficPolicy=Local --wait
-
 
 kubectl create secret generic appconfig \
    --from-literal=applicationInsightsConnectionString=$AI_CONNECTIONSTRING \
@@ -154,8 +142,11 @@ fi
 
 helm upgrade chaos-mesh chaos-mesh/chaos-mesh --install -n=chaos-testing --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.1.5 --wait
 
-echo "exposed nginx ingress on this ip:"
-kubectl --namespace ingress get services -o wide nginx-ingress-ingress-nginx-controller
-
 echo "deployed app into:"
 echo $DNS
+
+#kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
+
+echo "chaos dashboard token name is account-default-viewer-qcukn"
+kubectl describe -n chaos-testing secrets account-default-viewer-qcukn
+

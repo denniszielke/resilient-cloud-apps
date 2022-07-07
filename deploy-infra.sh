@@ -11,7 +11,7 @@ echo "No project name provided - aborting"
 exit 0;
 fi
 
-if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,8}$ ]]; then
+if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,9}$ ]]; then
     echo "project name $PROJECT_NAME is valid"
 else
     echo "project name $PROJECT_NAME is invalid - only numbers and lower case min 5 and max 8 characters allowed - aborting"

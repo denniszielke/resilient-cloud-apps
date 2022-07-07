@@ -20,6 +20,10 @@ spec:
     metadata:
       labels:
         app: message-receiver
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "message-receiver"
+        dapr.io/app-port: "8080"
     spec:
       containers:
       - name: message-receiver

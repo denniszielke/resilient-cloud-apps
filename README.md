@@ -15,8 +15,8 @@ Possible reagions (Azure Chaos Studio Preview restriction):
 'westcentralus,eastus,westus,centralus,uksouth,westeurope,japaneast,northcentralus,eastus2'
 
 ```
-PROJECT_NAME="reliabr2"
-LOCATION="westus"
+PROJECT_NAME="reliabr4"
+LOCATION="westeurope"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
 
@@ -24,7 +24,7 @@ bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
 
 ## Create config file
 ```
-PROJECT_NAME="reliabr2"
+PROJECT_NAME="reliabr4"
 bash ./create-config.sh $PROJECT_NAME
 ```
 
@@ -37,7 +37,7 @@ bash ./create-config.sh $PROJECT_NAME
 ## Deploy Apps into Cluster
 
 ```
-PROJECT_NAME="reliabr2"
+PROJECT_NAME="reliabr4"
 GITHUB_REPO_OWNER="denniszielke"
 IMAGE_TAG="latest"
 ENABLE_RATE_LIMITING="true"

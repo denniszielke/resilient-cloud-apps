@@ -5,8 +5,7 @@ param clusterName string
 
 param vmSize string = 'standard_d2s_v3'
 
-#disable-next-line BCP081
-resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2022-04-02-preview' = {
   name: clusterName
   location: location
   identity: {
@@ -19,17 +18,48 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
   properties: {
     dnsPrefix: clusterName
     enableRBAC: true
+    kubernetesVersion: '1.23'
+    ingressProfile: {
+      webAppRouting: {
+        enabled: true
+      }
+    }
+    workloadAutoScalerProfile: {
+      keda: {
+        enabled: true
+      }
+    }
     agentPoolProfiles: [
       {
+        availabilityZones: [
+          '1'
+          '2'
+        ]
         name: 'default'
         enableAutoScaling: true
-        count: 3
+        scaleDownMode: 'Deallocate'
+        scaleSetEvictionPolicy: 'Deallocate'
+        count: 4
         minCount: 3
         maxCount: 10
         vmSize: vmSize
         mode: 'System'
       }
     ]
+    networkProfile: {
+      networkPlugin: 'azure'
+
+    }
+    autoScalerProfile: {
+      expander: 'least-waste'
+      'max-graceful-termination-sec': '100'
+      'max-node-provision-time': '5m'
+      'ok-total-unready-count': '1'
+      'scale-down-delay-after-add': '3m'
+      'scale-down-unneeded-time': '5m'
+      'scale-down-utilization-threshold': '0.5'
+      'scan-interval': '10s'
+    }
   }
 }
 
@@ -99,6 +129,7 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
         ]
       }
     ]
+    startOnCreation: false
     steps: [
       {
         name: 'HTTP chaos at sink'

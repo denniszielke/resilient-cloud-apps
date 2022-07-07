@@ -20,6 +20,10 @@ spec:
     metadata:
       labels:
         app: message-creator
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "message-creator"
+        dapr.io/app-port: "8080"
     spec:
       containers:
       - name: message-creator
