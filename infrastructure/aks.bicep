@@ -110,7 +110,7 @@ resource aksHTTPChaos 'Microsoft.Chaos/targets/capabilities@2021-09-15-preview' 
   scope: aks
 }
 
-resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
+resource appChaos 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
   name: 'appChaos'
   location: location
   identity: {
@@ -140,13 +140,13 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
               {
                 type: 'continuous'
                 name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:HTTPChaos/2.1'
-                duration: 'PT2M'
+                duration: 'PT5M'
                 selectorId: 'SelectorAKS'
                 parameters: [
-                    {
-                        key: 'jsonSpec'
-                        value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"target":"Request","port":80,"method":"GET","path":"/api","abort":true,"duration":"120s"}'
-                    }
+                  {
+                      key: 'jsonSpec'
+                      value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"target":"Request","port":80,"method":"GET","path":"/api","abort":true,"duration":"120s"}'
+                  }
                 ]
               }
             ]
@@ -154,20 +154,59 @@ resource aksChaosExperiment 'Microsoft.Chaos/experiments@2021-09-15-preview' = {
         ]
       }
       {
-        name: 'Pod kill of sink'
+        name: 'Delay chaos'
         branches: [
           {
-            name: 'Pod kill of sink'
+            name: 'DNS Chaos at sink'
             actions: [
               {
                 type: 'continuous'
-                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1'
-                duration: 'PT2M'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:dnsChaos/2.1'
+                duration: 'PT5M'
                 selectorId: 'SelectorAKS'
                 parameters: [
                   {
                       key: 'jsonSpec'
-                      value: '{"mode":"all","selector":{"labelSelectors":{"app":"message-sink"}},"action":"pod-failure","duration":"120s",}'
+                      value: '{"action":"random","mode":"all","patterns":["*.documents.azure.com:"],"selector":{"labelSelectors":{"app":"message-sink"}}'
+                  }
+                ]
+              }
+            ]
+          }
+          {
+            name: 'Network delay at receiver'
+            actions: [
+              {
+                type: 'continuous'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:networkChaos/2.1'
+                duration: 'PT5M'
+                selectorId: 'SelectorAKS'
+                parameters: [
+                  {
+                      key: 'jsonSpec'
+                      value: '{"action":"delay","mode":"one","selector":"labelSelectors":{"app":"message-receiver"},"delay":{"latency":"10ms","correlation":"100","jitter":"0ms"}}'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+      {
+        name: 'Memory stress at creator'
+        branches: [
+          {
+            name: 'Network delay at creator'
+            actions: [
+              {
+                type: 'continuous'
+                name: 'urn:csci:microsoft:azureKubernetesServiceChaosMesh:stressChaos/2.1'
+                duration: 'PT5M'
+                selectorId: 'SelectorAKS'
+                parameters: [
+                  {
+                      key: 'jsonSpec'
+                      value: '{"mode":"one","selector":{"labelSelectors":{"app":"message-creator"}},"stressors":{"memory":{"workers":4,"size":"256MB"}}}'
                   }
                 ]
               }
@@ -190,7 +229,7 @@ resource chaosRoleAssign 'Microsoft.Authorization/roleAssignments@2020-10-01-pre
   scope: aks
   properties: {
     roleDefinitionId: aksClusterAdminRoleDefinition.id
-    principalId: aksChaosExperiment.identity.principalId
+    principalId: appChaos.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
