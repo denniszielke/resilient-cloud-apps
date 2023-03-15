@@ -11,6 +11,11 @@ echo "No project name provided - aborting"
 exit 0;
 fi
 
+if [ "$LOCATION" == "" ]; then
+echo "No location provided - aborting"
+exit 0;
+fi
+
 if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,9}$ ]]; then
     echo "project name $PROJECT_NAME is valid"
 else

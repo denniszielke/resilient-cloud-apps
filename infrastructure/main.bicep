@@ -62,5 +62,6 @@ module aks 'aks.bicep' = {
   params: {
     location: location
     clusterName: projectName
+    workspaceResourceId: logging.outputs.logAnalyticsWorkspaceId
   }
 }

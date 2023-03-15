@@ -1,11 +1,10 @@
 @description('Location for the Cosmos DB account.')
 param location string = resourceGroup().location
-
 param clusterName string
-
+param workspaceResourceId string
 param vmSize string = 'standard_d2s_v3'
 
-resource aks 'Microsoft.ContainerService/managedClusters@2022-04-02-preview' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2022-09-02-preview' = {
   name: clusterName
   location: location
   identity: {
@@ -18,7 +17,6 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-04-02-preview' = {
   properties: {
     dnsPrefix: clusterName
     enableRBAC: true
-    kubernetesVersion: '1.23'
     ingressProfile: {
       webAppRouting: {
         enabled: true
@@ -34,6 +32,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-04-02-preview' = {
         availabilityZones: [
           '1'
           '2'
+          '3'
         ]
         name: 'default'
         enableAutoScaling: true
@@ -59,6 +58,14 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-04-02-preview' = {
       'scale-down-unneeded-time': '5m'
       'scale-down-utilization-threshold': '0.5'
       'scan-interval': '10s'
+    }
+    addonProfiles: {
+      omsagent: {
+        enabled: true
+        config: {
+          logAnalyticsWorkspaceResourceID: workspaceResourceId
+        }
+      }
     }
   }
 }

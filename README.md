@@ -15,7 +15,7 @@ Possible reagions (Azure Chaos Studio Preview restriction):
 'westcentralus,eastus,westus,centralus,uksouth,westeurope,japaneast,northcentralus,eastus2'
 
 ```
-PROJECT_NAME="dzobsdmo9"
+PROJECT_NAME="dzobsdmo6"
 LOCATION="westeurope"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
