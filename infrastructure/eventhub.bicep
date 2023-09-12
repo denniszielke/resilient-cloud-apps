@@ -39,6 +39,5 @@ resource eventHub_ListenSend 'Microsoft.EventHub/namespaces/eventhubs/authorizat
   }
 }
 
-var eventHubNamespaceConnectionString = listKeys(eventHub_ListenSend.id, eventHub_ListenSend.apiVersion).primaryConnectionString
-output eventHubNamespaceConnectionString string = eventHubNamespaceConnectionString
 output eventHubName string = eventHubName
+output eventHubNamespaceName string = eventHubNamespaceName

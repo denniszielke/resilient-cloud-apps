@@ -1,11 +1,19 @@
 @description('Location resources.')
-param location string = resourceGroup().location
+param location string = 'westeurope'
 
 @description('Specifies a project name that is used to generate the Event Hub name and the Namespace name.')
 param projectName string
 
+targetScope = 'subscription'
+
+resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
+  name: '${projectName}-rg'
+  location: location
+}
+
 module logging 'logging.bicep' = {
   name: 'logging'
+  scope: rg
   params: {
     location: location
     logAnalyticsWorkspaceName: 'log-${projectName}'
@@ -15,6 +23,7 @@ module logging 'logging.bicep' = {
 
 module workbook 'workbook.bicep' = {
   name: 'workbook'
+  scope: rg
   params: {
     location: location
     workbookDisplayName: 'reliable-apps-new'
@@ -24,6 +33,7 @@ module workbook 'workbook.bicep' = {
 
 module eventhub 'eventhub.bicep' = {
   name: 'eventhub'
+  scope: rg
   params: {
     location: location
     eventHubNamespaceName: 'evhns-${projectName}'
@@ -33,6 +43,7 @@ module eventhub 'eventhub.bicep' = {
 
 module cosmosdbsql 'cosmosdb-sql.bicep' = {
   name: 'cosmosdbsql'
+  scope: rg
   params: {
     location: location
     cosmosdbAccountName: 'dbs${projectName}'
@@ -43,6 +54,7 @@ module cosmosdbsql 'cosmosdb-sql.bicep' = {
 
 module storage 'storage.bicep' = {
   name: 'storage'
+  scope: rg
   params: {
     location: location
     storageAccountName: 'st${projectName}'
@@ -51,17 +63,22 @@ module storage 'storage.bicep' = {
 
 module appconfig 'appconfig.bicep' = {
   name: 'appconfig'
+  scope: rg
   params: {
     location: location
     appConfigStoreName: 'appcs-${projectName}'
   }
 }
 
-module aks 'aks.bicep' = {
-  name: 'aks'
+module aca 'aca.bicep' = {
+  name: 'aca'
+  scope: rg
   params: {
+    containerAppEnvName: 'aca-${projectName}'
     location: location
-    clusterName: projectName
-    workspaceResourceId: logging.outputs.logAnalyticsWorkspaceId
+    appInsightsName: logging.outputs.appInsightsName
+    eventHubName: eventhub.name
+    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
+    logAnalyticsWorkspaceName: logging.outputs.logAnalyticsWorkspaceName
   }
 }
