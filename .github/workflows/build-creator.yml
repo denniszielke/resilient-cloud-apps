@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: src/Message.Receiver
+    working-directory: src/Message.Creator
 
 env:
   IMAGE_NAME: message-creator
