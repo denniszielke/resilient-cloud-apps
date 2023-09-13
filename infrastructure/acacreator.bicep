@@ -2,7 +2,7 @@ param containerAppEnvId string
 
 param location string = resourceGroup().location
 
-param creatorAppName string = 'message-creator'
+param appName string = 'message-creator'
 
 param eventHubNamespaceName string
 
@@ -21,7 +21,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
 }
 
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: creatorAppName
+  name: appName
   location: location
   properties: {
     managedEnvironmentId: containerAppEnvId
@@ -41,8 +41,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
     template: {
       containers: [
         {
-          name: creatorAppName
-          image: 'ghcr.io/jplck/reliable-apps/message-creator:main'
+          name: appName
+          image: 'ghcr.io/jplck/reliable-apps/${appName}:main'
           resources: {
             cpu: json('.5')
             memory: '1Gi'
