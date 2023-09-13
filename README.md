@@ -3,7 +3,8 @@
 
 Chaos engineering, fault injection testing, resiliency patterns, designing for failure - so many design principles and topics and still is reliability often times an afterthought.  
 Let us run together a "game day" for resilience validation of our live Azure application.  
-Take a look how we use **Azure Chaos Studio** for doing resilience validation, and how we measure, understand, and improve resilience against real-world incidents using **resiliency patterns in code**.  
+
+Take a look how we use **Azure App Configuration** to toggle various resilience scenarios, and how we measure, understand, and improve resilience against real-world incidents using **resiliency patterns in code**.
 We will also show you how you can use **Azure Monitor with Application Insights** to compare and understand the availability impact of your patterns.
 
 High Level Architecture:
@@ -11,20 +12,20 @@ High Level Architecture:
 
 
 ## Deploy Azure resources
-Possible reagions (Azure Chaos Studio Preview restriction):  
+e.g. possible reagions:  
 'westcentralus,eastus,westus,centralus,uksouth,westeurope,japaneast,northcentralus,eastus2'
 
-```
-PROJECT_NAME="dzobsdmo6"
+```bash
+PROJECT_NAME="asresapp1"
 LOCATION="westeurope"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
-
 ```
 
 ## Create config file
-```
-PROJECT_NAME="reliabr4"
+```bash
+PROJECT_NAME="asresapp1"
+
 bash ./create-config.sh $PROJECT_NAME
 ```
 
@@ -35,10 +36,9 @@ bash ./create-config.sh $PROJECT_NAME
 
 
 ## Deploy Apps into Cluster
-
-```
-PROJECT_NAME="reliabr4"
-GITHUB_REPO_OWNER="denniszielke"
+```bash
+PROJECT_NAME="asresapp1"
+GITHUB_REPO_OWNER="/jplck"
 IMAGE_TAG="latest"
 ENABLE_RATE_LIMITING="true"
 ENABLE_RETRY="false"

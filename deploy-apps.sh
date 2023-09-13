@@ -23,7 +23,7 @@ else
     exit 0;
 fi
 
-RESOURCE_GROUP="$PROJECT_NAME"
+RESOURCE_GROUP="$PROJECT_NAME-rg"
 
 if [ "$ENABLE_RATE_LIMITING" == "" ]; then
     echo "setting rate limiting to false"

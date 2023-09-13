@@ -18,29 +18,9 @@ else
     exit 0;
 fi
 
-RESOURCE_GROUP="$PROJECT_NAME"
+RESOURCE_GROUP="$PROJECT_NAME-rg"
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
-
-if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
-    echo "resource group $RESOURCE_GROUP does not exist"
-    error=1
-else   
-    echo "resource group $RESOURCE_GROUP already exists"
-    LOCATION=$(az group show -n $RESOURCE_GROUP --query location -o tsv)
-fi
-
-KUBE_NAME=$(az aks list -g $RESOURCE_GROUP --query '[0].name' -o tsv)
-
-if [ "$KUBE_NAME" == "" ]; then
-    echo "no AKS cluster found in Resource Group $RESOURCE_GROUP"
-    error=1
-fi
-
-echo "found cluster $KUBE_NAME"
-echo "getting kubeconfig for cluster $KUBE_NAME"
-
-az aks get-credentials --resource-group=$RESOURCE_GROUP --name=$KUBE_NAME --admin
 
 AI_CONNECTIONSTRING=$(az resource show -g $RESOURCE_GROUP -n appi-$PROJECT_NAME --resource-type "Microsoft.Insights/components" --query properties.ConnectionString -o tsv | tr -d '[:space:]')
 BLOB_CONNECTIONSTRING=$(az storage account show-connection-string --name st$PROJECT_NAME --resource-group $RESOURCE_GROUP --query "connectionString" -o tsv)
