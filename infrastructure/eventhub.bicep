@@ -42,3 +42,4 @@ resource eventHub_ListenSend 'Microsoft.EventHub/namespaces/eventhubs/authorizat
 output eventHubName string = eventHubName
 output eventHubNamespaceName string = eventHubNamespaceName
 output authRuleName string = eventHub_ListenSend.name
+output authRulePrimaryConnectionString string = listKeys(eventHub_ListenSend.id, '2021-01-01-preview').primaryConnectionString

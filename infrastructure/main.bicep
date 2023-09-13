@@ -72,18 +72,13 @@ module appconfig 'appconfig.bicep' = {
 
 module aca 'aca.bicep' = {
   name: 'aca'
-  dependsOn: [
-    logging
-    eventhub
-  ]
   scope: rg
   params: {
     containerAppEnvName: 'aca-${projectName}'
     location: location
     appInsightsName: logging.outputs.appInsightsName
-    eventHubName: eventhub.name
-    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
+    eventHubName: eventhub.outputs.eventHubName
+    eventHubPrimaryKey: eventhub.outputs.authRulePrimaryConnectionString
     logAnalyticsWorkspaceName: logging.outputs.logAnalyticsWorkspaceName
-    ehAuthRuleName: eventhub.outputs.authRuleName
   }
 }

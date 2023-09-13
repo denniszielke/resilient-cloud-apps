@@ -6,19 +6,14 @@ param location string = resourceGroup().location
 
 param creatorAppName string = 'message-creator'
 
-param eventHubNamespaceName string
-
 param eventHubName string
 
 param appInsightsName string
 
 param logAnalyticsWorkspaceName string
 
-param ehAuthRuleName string
+param eventHubPrimaryKey string
 
-resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
-  name: eventHubNamespaceName
-}
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-10-01' existing = {
   name: logAnalyticsWorkspaceName
@@ -26,10 +21,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-10
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
-}
-
-resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
-  name: '${eventHubNamespace}/${eventHubName}/${ehAuthRuleName}'
 }
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
@@ -107,7 +98,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'EventHub__EventHubConnectionString'
-              value: rule.listKeys().primaryConnectionString
+              value: eventHubPrimaryKey
             }
           ]
           probes: [
@@ -123,7 +114,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
         maxReplicas: 2
         rules: [
           {
