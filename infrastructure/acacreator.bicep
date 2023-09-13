@@ -45,7 +45,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
           image: 'ghcr.io/jplck/reliable-apps/message-creator:main'
           resources: {
             cpu: json('.5')
-            memory: '0.3Gi'
+            memory: '1Gi'
           }
           env: [
             {
