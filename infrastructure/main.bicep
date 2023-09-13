@@ -4,6 +4,10 @@ param location string = 'westeurope'
 @description('Specifies a project name that is used to generate the Event Hub name and the Namespace name.')
 param projectName string
 
+param registryOwner string
+
+param imageTag string
+
 targetScope = 'subscription'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
@@ -90,6 +94,8 @@ module acacreator 'acacreator.bicep' = {
     eventHubName: eventhub.outputs.eventHubName
     eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
     eventHubAuthRuleName: eventhub.outputs.authRuleName
+    registryOwner: registryOwner
+    imageTag: imageTag
   }
 }
 
@@ -104,5 +110,7 @@ module acareceiver 'acareceiver.bicep' = {
     eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
     eventHubAuthRuleName: eventhub.outputs.authRuleName
     storageConnectionString: storage.outputs.blobStorageConnectionString
+    registryOwner: registryOwner
+    imageTag: imageTag
   }
 }
