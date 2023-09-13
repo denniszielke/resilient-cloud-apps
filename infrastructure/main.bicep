@@ -70,15 +70,39 @@ module appconfig 'appconfig.bicep' = {
   }
 }
 
-module aca 'aca.bicep' = {
-  name: 'aca'
+module acaenv 'acaenv.bicep' = {
+  name: 'acaenv'
   scope: rg
   params: {
     containerAppEnvName: 'aca-${projectName}'
     location: location
+    logAnalyticsWorkspaceName: logging.outputs.logAnalyticsWorkspaceName
+  }
+}
+
+module acacreator 'acacreator.bicep' = {
+  name: 'acacreator'
+  scope: rg
+  params: {
+    containerAppEnvId: acaenv.outputs.containerAppEnvId
+    location: location
     appInsightsName: logging.outputs.appInsightsName
     eventHubName: eventhub.outputs.eventHubName
-    eventHubPrimaryKey: eventhub.outputs.authRulePrimaryConnectionString
-    logAnalyticsWorkspaceName: logging.outputs.logAnalyticsWorkspaceName
+    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
+    eventHubAuthRuleName: eventhub.outputs.authRuleName
+  }
+}
+
+module acareceiver 'acareceiver.bicep' = {
+  name: 'acareceiver'
+  scope: rg
+  params: {
+    containerAppEnvId: acaenv.outputs.containerAppEnvId
+    location: location
+    appInsightsName: logging.outputs.appInsightsName
+    eventHubName: eventhub.outputs.eventHubName
+    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
+    eventHubAuthRuleName: eventhub.outputs.authRuleName
+    storageConnectionString: storage.outputs.blobStorageConnectionString
   }
 }

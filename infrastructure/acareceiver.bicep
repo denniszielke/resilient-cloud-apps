@@ -1,50 +1,32 @@
-@description('Specifies the name of the container app environment.')
-param containerAppEnvName string
+param containerAppEnvId string
 
-@description('Specifies the location for all resources.')
 param location string = resourceGroup().location
 
 param creatorAppName string = 'message-creator'
 
+param eventHubNamespaceName string
+
 param eventHubName string
+
+param eventHubAuthRuleName string
 
 param appInsightsName string
 
-param logAnalyticsWorkspaceName string
+param storageConnectionString string
 
-param eventHubPrimaryKey string
-
-
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-10-01' existing = {
-  name: logAnalyticsWorkspaceName
+resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
+  name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
 }
 
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
-  name: containerAppEnvName
-  location: location
-  sku: {
-    name: 'Consumption'
-  }
-  properties: {
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: logAnalyticsWorkspace.properties.customerId
-        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
-      }
-    }
-  }
-}
-
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
   name: creatorAppName
   location: location
   properties: {
-    managedEnvironmentId: containerAppEnv.id
+    managedEnvironmentId: containerAppEnvId
     configuration: {
       ingress: {
         external: true
@@ -62,10 +44,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       containers: [
         {
           name: creatorAppName
-          image: 'ghcr.io/[handle]/reliable-apps/message-creator:main'
+          image: 'ghcr.io/jplck/reliable-apps/message-receiver:main'
           resources: {
             cpu: json('.5')
-            memory: '1Gi'
+            memory: '800Mi'
           }
           env: [
             {
@@ -77,8 +59,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://+:8080'
             }
             {
-              name: 'RECEIVER_URL'
-              value: 'http://message-receiver/api/message/receive'
+              name: 'SINK_URL'
+              value: 'http://message-sink/api/message/receive'
             }
             {
               name: 'HttpClient__EnableRetry'
@@ -98,7 +80,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'EventHub__EventHubConnectionString'
-              value: eventHubPrimaryKey
+              value: rule.listKeys().primaryConnectionString
+            }
+            {
+              name: 'EventHub__BlobConnectionString'
+              value: storageConnectionString
             }
           ]
           probes: [
