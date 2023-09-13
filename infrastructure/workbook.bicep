@@ -8,7 +8,7 @@ param workbookType string = 'workbook'
 param workbookSourceId string
 
 @description('The unique guid for this workbook instance')
-param workbookId string = newGuid()
+param workbookId string
 
 @description('Location for the workbook.')
 param location string = resourceGroup().location

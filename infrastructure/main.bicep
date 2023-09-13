@@ -30,6 +30,7 @@ module workbook 'workbook.bicep' = {
   scope: rg
   params: {
     location: location
+    workbookId: '5caf5fbb-125c-4cfb-a3b3-de2c5a27ff08'
     workbookDisplayName: 'reliable-apps-new-${projectName}'
     workbookSourceId: logging.outputs.appInsightsId
   }

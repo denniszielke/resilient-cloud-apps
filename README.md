@@ -18,7 +18,7 @@ e.g. possible reagions:
 ```bash
 PROJECT_NAME="asresapp1"
 LOCATION="westeurope"
-GITHUB_REPO_OWNER="/jplck"
+GITHUB_REPO_OWNER="jplck"
 IMAGE_TAG="latest"
 
 bash ./deploy-infra.sh $PROJECT_NAME $LOCATION $GITHUB_REPO_OWNER $IMAGE_TAG
