@@ -76,3 +76,5 @@ resource accountName_databaseName_containerName 'Microsoft.DocumentDB/databaseAc
     }
   }
 }
+
+output name string = cosmosDB.name

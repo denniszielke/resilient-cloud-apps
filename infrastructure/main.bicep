@@ -115,3 +115,16 @@ module acareceiver 'acareceiver.bicep' = {
     imageTag: imageTag
   }
 }
+
+module acasink 'acasink.bicep' = {
+  name: 'acasink'
+  scope: rg
+  params: {
+    containerAppEnvId: acaenv.outputs.containerAppEnvId
+    location: location
+    appInsightsName: logging.outputs.appInsightsName
+    registryOwner: registryOwner
+    imageTag: imageTag
+    cosmosDbName: cosmosdbsql.outputs.name
+  }
+}

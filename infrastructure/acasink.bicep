@@ -10,10 +10,14 @@ param registryOwner string
 
 param imageTag string
 
-param cdbConnectionString string
+param cosmosDbName string
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
+}
+
+resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts@2021-01-15' existing = {
+  name: cosmosDbName
 }
 
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
@@ -62,7 +66,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'ConnectionStrings__CosmosApi'
-              value: cdbConnectionString
+              value: cosmosDb.listConnectionStrings().connectionStrings[0].connectionString
             }
             {
               name: 'ApplicationInsights__ConnectionString'
