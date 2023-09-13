@@ -18,8 +18,10 @@ e.g. possible reagions:
 ```bash
 PROJECT_NAME="asresapp1"
 LOCATION="westeurope"
+GITHUB_REPO_OWNER="/jplck"
+IMAGE_TAG="latest"
 
-bash ./deploy-infra.sh $PROJECT_NAME $LOCATION
+bash ./deploy-infra.sh $PROJECT_NAME $LOCATION $GITHUB_REPO_OWNER $IMAGE_TAG
 ```
 
 ## Create config file
@@ -33,20 +35,7 @@ bash ./create-config.sh $PROJECT_NAME
 - create azure resources by running infra script 
 - create local config by running create config script or adjust environment variables in local.env accordingly
 - launch debug and open http://localhost:5025
-
-
-## Deploy Apps into Cluster
-```bash
-PROJECT_NAME="asresapp1"
-GITHUB_REPO_OWNER="/jplck"
-IMAGE_TAG="latest"
-ENABLE_RATE_LIMITING="true"
-ENABLE_RETRY="false"
-ENABLE_BREAKER="false"
-
-bash ./deploy-apps.sh $PROJECT_NAME $GITHUB_REPO_OWNER $IMAGE_TAG $ENABLE_RATE_LIMITING $ENABLE_RETRY $ENABLE_BREAKER
-
-```
+- 
 
 ## Resiliency patterns shown in this sample
 

@@ -14,6 +14,10 @@ param appInsightsName string
 
 param storageConnectionString string
 
+param registryOwner string
+
+param imageTag string
+
 resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
   name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
 }
@@ -44,7 +48,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       containers: [
         {
           name: creatorAppName
-          image: 'ghcr.io/jplck/reliable-apps/message-receiver:main'
+          image: 'ghcr.io/${registryOwner}/reliable-apps/message-receiver:${imageTag}'
           resources: {
             cpu: json('.5')
             memory: '800Mi'
