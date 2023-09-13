@@ -1,5 +1,5 @@
 @description('Specifies the name of the container app environment.')
-param containerAppEnvName string = 'env-${uniqueString(resourceGroup().id)}'
+param containerAppEnvName string
 
 @description('Specifies the location for all resources.')
 param location string = resourceGroup().location
@@ -14,6 +14,8 @@ param appInsightsName string
 
 param logAnalyticsWorkspaceName string
 
+param ehAuthRuleName string
+
 resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
   name: eventHubNamespaceName
 }
@@ -26,6 +28,9 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
 }
 
+resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
+  name: '${eventHubNamespace}/${eventHubName}/${ehAuthRuleName}'
+}
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
   name: containerAppEnvName
@@ -44,20 +49,9 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' 
   }
 }
 
-resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
-  name: 'id-${creatorAppName}'
-  location: location
-}
-
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
   name: creatorAppName
   location: location
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${uai.id}': {}
-    }
-  }
   properties: {
     managedEnvironmentId: containerAppEnv.id
     configuration: {
@@ -113,7 +107,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'EventHub__EventHubConnectionString'
-              value: ''
+              value: rule.listKeys().primaryConnectionString
             }
           ]
           probes: [

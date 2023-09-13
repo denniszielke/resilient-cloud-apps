@@ -26,7 +26,7 @@ module workbook 'workbook.bicep' = {
   scope: rg
   params: {
     location: location
-    workbookDisplayName: 'reliable-apps-new'
+    workbookDisplayName: 'reliable-apps-new-${projectName}'
     workbookSourceId: logging.outputs.appInsightsId
   }
 }
@@ -72,6 +72,10 @@ module appconfig 'appconfig.bicep' = {
 
 module aca 'aca.bicep' = {
   name: 'aca'
+  dependsOn: [
+    logging
+    eventhub
+  ]
   scope: rg
   params: {
     containerAppEnvName: 'aca-${projectName}'
@@ -80,5 +84,6 @@ module aca 'aca.bicep' = {
     eventHubName: eventhub.name
     eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
     logAnalyticsWorkspaceName: logging.outputs.logAnalyticsWorkspaceName
+    ehAuthRuleName: eventhub.outputs.authRuleName
   }
 }

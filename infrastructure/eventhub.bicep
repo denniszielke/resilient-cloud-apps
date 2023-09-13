@@ -41,3 +41,4 @@ resource eventHub_ListenSend 'Microsoft.EventHub/namespaces/eventhubs/authorizat
 
 output eventHubName string = eventHubName
 output eventHubNamespaceName string = eventHubNamespaceName
+output authRuleName string = eventHub_ListenSend.name
