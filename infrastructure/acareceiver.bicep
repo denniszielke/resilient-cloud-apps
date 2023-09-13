@@ -51,7 +51,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
           image: 'ghcr.io/${registryOwner}/reliable-apps/message-receiver:${imageTag}'
           resources: {
             cpu: json('.5')
-            memory: '800Mi'
+            memory: '1Gi'
           }
           env: [
             {
