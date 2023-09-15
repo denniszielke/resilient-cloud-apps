@@ -3,6 +3,11 @@ param location string = resourceGroup().location
 
 param appConfigStoreName string
 
+param serviceNames array = [
+  'Message.Creator'
+  'Message.Receiver'
+]
+
 resource appConfigStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
   name: appConfigStoreName
   location: location
@@ -14,47 +19,35 @@ resource appConfigStore 'Microsoft.AppConfiguration/configurationStores@2021-10-
     disableLocalAuth: false
     enablePurgeProtection: false
     publicNetworkAccess: 'Enabled'
-    softDeleteRetentionInDays: 0
+    softDeleteRetentionInDays: 1
   }
 }
-
-resource HttpClient__EnableRetry 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
+resource EnableRetryFeatureFlag 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for serviceName in serviceNames: {
   parent: appConfigStore
-  name: '.appconfig.featureflag~2FHttpClient__EnableRetry'
+  name: '.appconfig.featureflag~2F${serviceName}__EnableRetry'
   properties: {
     value: string({
-      id: 'HttpClient__EnableRetry'
-      description: 'Enable retry for HttpClient'
+      id: 'flag${serviceName}__EnableRetry'
+      description: 'Enable retry on ${serviceName} for HttpClient'
       enabled: false
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
-}
+}]
 
-resource HttpClient__EnableBreaker 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
+resource EnableBreakerFeatureFlag 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for serviceName in serviceNames: {
   parent: appConfigStore
-  name: '.appconfig.featureflag~2FHttpClient__EnableBreaker'
+  name: '.appconfig.featureflag~2F${serviceName}__EnableBreaker'
   properties: {
     value: string({
-      id: 'HttpClient__EnableBreaker'
-      description: 'Enable circuit breaker for HttpClient'
+      id: 'flag${serviceName}__EnableBreaker'
+      description: 'Enable circuit breaker on ${serviceName} for HttpClient'
       enabled: false
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
-}
+}]
 
-resource IpRateLimiting__EnableEndpointRateLimiting 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = {
-  parent: appConfigStore
-  name: '.appconfig.featureflag~2FIpRateLimiting__EnableEndpointRateLimiting'
-  properties: {
-    value: string({
-      id: 'IpRateLimiting__EnableEndpointRateLimiting'
-      description: 'Set to true to enable endpoint rate limiting'
-      enabled: false
-    })
-    contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
-  }
-}
+output appConfigurationName string = appConfigStore.name
 
 
