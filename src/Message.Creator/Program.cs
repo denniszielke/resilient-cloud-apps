@@ -50,6 +50,14 @@ builder.Services.AddSingleton<SinkClient, SinkClient>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
+           .Select("Message.Creator:*", LabelFilter.Null)
+           .ConfigureRefresh(refreshOptions =>
+                refreshOptions.SetCacheExpiration(TimeSpan.FromSeconds(5)));
+});
+
 bool enableRetry = builder.Configuration.GetValue<bool>("HttpClient:EnableRetry");
 bool enableBreaker = builder.Configuration.GetValue<bool>("HttpClient:EnableBreaker");
 
@@ -107,5 +115,7 @@ var options = new DefaultFilesOptions();
 options.DefaultFileNames.Clear();
 options.DefaultFileNames.Add("index.html");
 app.UseDefaultFiles(options);
+
+app.UseAzureAppConfiguration();
 
 app.Run();
