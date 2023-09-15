@@ -97,6 +97,7 @@ module acacreator 'acacreator.bicep' = {
     eventHubAuthRuleName: eventhub.outputs.authRuleName
     registryOwner: registryOwner
     imageTag: imageTag
+    appConfigurationName: appconfig.outputs.appConfigurationName
   }
 }
 
@@ -113,6 +114,7 @@ module acareceiver 'acareceiver.bicep' = {
     storageConnectionString: storage.outputs.blobStorageConnectionString
     registryOwner: registryOwner
     imageTag: imageTag
+    appConfigurationName: appconfig.outputs.appConfigurationName
   }
 }
 

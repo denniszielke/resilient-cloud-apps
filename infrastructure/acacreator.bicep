@@ -16,8 +16,14 @@ param registryOwner string
 
 param imageTag string
 
+param appConfigurationName string
+
 resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
   name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
+}
+
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing = {
+  name: appConfigurationName
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
@@ -83,6 +89,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             {
               name: 'EventHub__EventHubConnectionString'
               value: rule.listKeys().primaryConnectionString
+            }
+            {
+              name: 'AppConfiguration__ConnectionString'
+              value: appConfiguration.listKeys().value[0].connectionString
             }
           ]
           probes: [
