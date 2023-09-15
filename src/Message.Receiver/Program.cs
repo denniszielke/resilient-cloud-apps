@@ -43,8 +43,8 @@ builder.Services.AddAzureClients(b =>
 
 builder.Services.AddSingleton<SinkClient, SinkClient>();
 
-bool enableRetry = builder.Configuration.GetValue<bool>("HttpClient:EnableRetry");
-bool enableBreaker = builder.Configuration.GetValue<bool>("HttpClient:EnableBreaker");
+bool enableRetry = builder.Configuration.GetValue<bool>("Message.Receiver.HttpClient:EnableRetry");
+bool enableBreaker = builder.Configuration.GetValue<bool>("Message.Receiver.HttpClient:EnableBreaker");
 
 Console.WriteLine("Retry is set to: " + enableRetry);
 Console.WriteLine("Breaker is set to: " + enableBreaker);

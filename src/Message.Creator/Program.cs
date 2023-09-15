@@ -58,8 +58,8 @@ builder.Configuration.AddAzureAppConfiguration(options =>
                 refreshOptions.SetCacheExpiration(TimeSpan.FromSeconds(5)));
 });
 
-bool enableRetry = builder.Configuration.GetValue<bool>("HttpClient:EnableRetry");
-bool enableBreaker = builder.Configuration.GetValue<bool>("HttpClient:EnableBreaker");
+bool enableRetry = builder.Configuration.GetValue<bool>("Message.Creator.HttpClient:EnableRetry");
+bool enableBreaker = builder.Configuration.GetValue<bool>("Message.Creator.HttpClient:EnableBreaker");
 
 Console.WriteLine("Retry is set to: " + enableRetry);
 Console.WriteLine("Breaker is set to: " + enableBreaker);
