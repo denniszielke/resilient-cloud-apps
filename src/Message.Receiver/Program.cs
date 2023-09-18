@@ -6,7 +6,6 @@ using Polly;
 using Message.Receiver.Clients;
 using Microsoft.ApplicationInsights.Extensibility;
 using Polly.Extensions.Http;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,9 +55,9 @@ var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .WaitAndRetryAsync(new[]
     {
+        TimeSpan.FromSeconds(0.5),
         TimeSpan.FromSeconds(1),
-        TimeSpan.FromSeconds(5),
-        TimeSpan.FromSeconds(10)
+        TimeSpan.FromSeconds(5)
     });
 
 var breakerPolicy = HttpPolicyExtensions

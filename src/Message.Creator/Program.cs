@@ -59,9 +59,9 @@ var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .WaitAndRetryAsync(new[]
     {
+        TimeSpan.FromSeconds(0.5),
         TimeSpan.FromSeconds(1),
-        TimeSpan.FromSeconds(5),
-        TimeSpan.FromSeconds(10)
+        TimeSpan.FromSeconds(5)
     });
 
 var breakerPolicy = HttpPolicyExtensions
