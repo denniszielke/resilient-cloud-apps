@@ -71,11 +71,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://message-receiver/api/message/receive'
             }
             {
-              name: 'Message.Creator.HttpClient__EnableRetry'
+              name: 'Message.Creator__EnableRetry'
               value: 'false'
             }
             {
-              name: 'Message.Creator.HttpClient__EnableBreaker'
+              name: 'Message.Creator__EnableBreaker'
               value: 'false'
             }
             {

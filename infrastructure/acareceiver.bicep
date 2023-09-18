@@ -73,11 +73,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://message-sink/api/message/receive'
             }
             {
-              name: 'Message.Receiver.HttpClient__EnableRetry'
+              name: 'Message.Receiver__EnableRetry'
               value: 'false'
             }
             {
-              name: 'Message.Receiver.HttpClient__EnableBreaker'
+              name: 'Message.Receiver__EnableBreaker'
               value: 'false'
             }
             {

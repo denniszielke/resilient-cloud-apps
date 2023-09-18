@@ -24,10 +24,10 @@ resource appConfigStore 'Microsoft.AppConfiguration/configurationStores@2021-10-
 }
 resource EnableRetryFeatureFlag 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for serviceName in serviceNames: {
   parent: appConfigStore
-  name: '.appconfig.featureflag~2F${serviceName}.HttpClient__EnableRetry'
+  name: '.appconfig.featureflag~2F${serviceName}:EnableRetry'
   properties: {
     value: string({
-      id: 'flag${serviceName}.HttpClient__EnableRetry'
+      id: 'flag${serviceName}:EnableRetry'
       description: 'Enable retry on ${serviceName} for HttpClient'
       enabled: false
     })
@@ -37,10 +37,10 @@ resource EnableRetryFeatureFlag 'Microsoft.AppConfiguration/configurationStores/
 
 resource EnableBreakerFeatureFlag 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for serviceName in serviceNames: {
   parent: appConfigStore
-  name: '.appconfig.featureflag~2F${serviceName}.HttpClient__EnableBreaker'
+  name: '.appconfig.featureflag~2F${serviceName}:EnableBreaker'
   properties: {
     value: string({
-      id: 'flag${serviceName}.HttpClient__EnableBreaker'
+      id: 'flag${serviceName}:EnableBreaker'
       description: 'Enable circuit breaker on ${serviceName} for HttpClient'
       enabled: false
     })
