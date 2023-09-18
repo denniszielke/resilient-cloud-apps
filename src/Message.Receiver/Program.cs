@@ -46,7 +46,7 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
         .UseFeatureFlags(options => {
-            options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+            options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
         });
 });
 
