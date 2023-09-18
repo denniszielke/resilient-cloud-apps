@@ -62,6 +62,7 @@ var retryPolicy = HttpPolicyExtensions
 
 var breakerPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
+    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
     .CircuitBreakerAsync(
         handledEventsAllowedBeforeBreaking: 3,
         durationOfBreak: TimeSpan.FromSeconds(30)
