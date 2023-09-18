@@ -1,19 +1,14 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Azure;
 using Polly;
-using Azure.Messaging.EventHubs;
 using Message.Creator.Clients;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Polly.Extensions.Http;
+using Message.Creator;
+
+const string FEATURE_FLAG_PREFIX = "featureManagement:Message.Creator";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,16 +48,12 @@ builder.Services.AddSwaggerGen();
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
-           .Select("Message.Creator:*", LabelFilter.Null)
-           .ConfigureRefresh(refreshOptions =>
-                refreshOptions.SetCacheExpiration(TimeSpan.FromSeconds(5)));
+        .UseFeatureFlags(options => {
+            options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+        });
 });
 
-bool enableRetry = builder.Configuration.GetValue<bool>("Message.Creator.HttpClient:EnableRetry");
-bool enableBreaker = builder.Configuration.GetValue<bool>("Message.Creator.HttpClient:EnableBreaker");
-
-Console.WriteLine("Retry is set to: " + enableRetry);
-Console.WriteLine("Breaker is set to: " + enableBreaker);
+builder.Services.AddAzureAppConfiguration();
 
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
@@ -86,6 +77,13 @@ builder.Services.AddHttpClient("Sink", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("RECEIVER_URL"));
 }).AddPolicyHandler(request => {
+
+    bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
+    bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
+
+    Console.WriteLine("Retry is set to: " + enableRetry);
+    Console.WriteLine("Breaker is set to: " + enableBreaker);
+
     if (!enableBreaker && enableRetry) {
         return retryPolicy;
     } else if (enableBreaker && !enableRetry) {
@@ -107,6 +105,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAzureAppConfiguration();
 
 app.MapControllers();
 
@@ -115,7 +114,5 @@ var options = new DefaultFilesOptions();
 options.DefaultFileNames.Clear();
 options.DefaultFileNames.Add("index.html");
 app.UseDefaultFiles(options);
-
-app.UseAzureAppConfiguration();
 
 app.Run();

@@ -1,8 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Azure;
 using Message.Receiver.Background;
@@ -10,8 +6,11 @@ using Polly;
 using Message.Receiver.Clients;
 using Microsoft.ApplicationInsights.Extensibility;
 using Polly.Extensions.Http;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+const string FEATURE_FLAG_PREFIX = "featureManagement:Message.Receiver";
 
 builder.Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
@@ -43,11 +42,15 @@ builder.Services.AddAzureClients(b =>
 
 builder.Services.AddSingleton<SinkClient, SinkClient>();
 
-bool enableRetry = builder.Configuration.GetValue<bool>("Message.Receiver.HttpClient:EnableRetry");
-bool enableBreaker = builder.Configuration.GetValue<bool>("Message.Receiver.HttpClient:EnableBreaker");
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
+        .UseFeatureFlags(options => {
+            options.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+        });
+});
 
-Console.WriteLine("Retry is set to: " + enableRetry);
-Console.WriteLine("Breaker is set to: " + enableBreaker);
+builder.Services.AddAzureAppConfiguration();
 
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
@@ -71,6 +74,13 @@ builder.Services.AddHttpClient("Sink", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
 }).AddPolicyHandler(request => {
+
+    bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
+    bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
+
+    Console.WriteLine("Retry is set to: " + enableRetry);
+    Console.WriteLine("Breaker is set to: " + enableBreaker);
+
     if (!enableBreaker && enableRetry) {
         return retryPolicy;
     } else if (enableBreaker && !enableRetry) {
@@ -86,6 +96,8 @@ builder.Services.AddHttpClient("Sink", client =>
 builder.Services.AddHostedService<EventConsumer>();
 
 var app = builder.Build();
+
+app.UseAzureAppConfiguration();
 
 app.MapControllers();
 
