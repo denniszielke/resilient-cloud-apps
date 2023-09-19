@@ -48,6 +48,20 @@ resource EnableBreakerFeatureFlag 'Microsoft.AppConfiguration/configurationStore
   }
 }]
 
+resource EnableRateLimitingFeatureFlag 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for serviceName in serviceNames: {
+  parent: appConfigStore
+  name: '.appconfig.featureflag~2F${serviceName}:EnableRateLimiting'
+  properties: {
+    value: string({
+      id: '${serviceName}:EnableRateLimiting'
+      description: 'Enable rate limiting on ${serviceName}'
+      enabled: false
+    })
+    contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
+  }
+}]
+
+
 output appConfigurationName string = appConfigStore.name
 
 
