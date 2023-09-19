@@ -11,4 +11,4 @@ RUN dotnet publish -c release -o /app --self-contained false --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 WORKDIR /app
 COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "Message.Receiver.dll"]
+ENTRYPOINT ["dotnet", "Contonance.Backend.dll"]
