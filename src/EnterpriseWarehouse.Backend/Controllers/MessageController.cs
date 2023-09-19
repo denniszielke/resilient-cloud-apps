@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace Message.Sink.Controllers
+namespace EnterpriseWarehouse.Backend.Controllers
 {
 
     [ApiController]

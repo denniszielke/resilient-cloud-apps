@@ -2,7 +2,7 @@ param containerAppEnvId string
 
 param location string = resourceGroup().location
 
-param appName string = 'message-receiver'
+param appName string = 'contonance-backend'
 
 param eventHubNamespaceName string
 
@@ -69,15 +69,15 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://+:8080'
             }
             {
-              name: 'SINK_URL'
-              value: 'http://message-sink/api/message/receive'
+              name: 'ENTERPRISE_WAREHOUSE_BACKEND_URL'
+              value: 'http://enterprise-warehouse-backend/api/message/receive'
             }
             {
-              name: 'Message.Receiver__EnableRetry'
+              name: 'Contonance.Backend__EnableRetry'
               value: 'false'
             }
             {
-              name: 'Message.Receiver__EnableBreaker'
+              name: 'Contonance.Backend__EnableBreaker'
               value: 'false'
             }
             {

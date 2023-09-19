@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build-message-receiver
+name: build-contonance-backend
 
 # Controls when the action will run. 
 on:
@@ -9,10 +9,10 @@ on:
 
 defaults:
   run:
-    working-directory: src/Message.Receiver
+    working-directory: src/Contonance.Backend
 
 env:
-  IMAGE_NAME: message-receiver
+  IMAGE_NAME: contonance-backend
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

@@ -101,8 +101,8 @@ module acacreator 'acacreator.bicep' = {
   }
 }
 
-module acareceiver 'acareceiver.bicep' = {
-  name: 'acareceiver'
+module acareceiver 'acacontonancebackend.bicep' = {
+  name: 'acacontonancebackend'
   scope: rg
   params: {
     containerAppEnvId: acaenv.outputs.containerAppEnvId
@@ -118,8 +118,8 @@ module acareceiver 'acareceiver.bicep' = {
   }
 }
 
-module acasink 'acasink.bicep' = {
-  name: 'acasink'
+module acasink 'acawarehouse.bicep' = {
+  name: 'acawarehouse'
   scope: rg
   params: {
     containerAppEnvId: acaenv.outputs.containerAppEnvId

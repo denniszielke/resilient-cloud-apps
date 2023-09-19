@@ -5,7 +5,7 @@ param appConfigStoreName string
 
 param serviceNames array = [
   'Message.Creator'
-  'Message.Receiver'
+  'Contonance.Backend'
 ]
 
 resource appConfigStore 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {

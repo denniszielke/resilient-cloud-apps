@@ -84,7 +84,7 @@ var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 
 builder.Services.AddHttpClient("Sink", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("RECEIVER_URL"));
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("CONTONANCE_BACKEND_URL"));
 }).AddPolicyHandler(request => {
 
     var policies = new List<IAsyncPolicy<HttpResponseMessage>>();

@@ -67,8 +67,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://+:8080'
             }
             {
-              name: 'RECEIVER_URL'
-              value: 'http://message-receiver/api/message/receive'
+              name: 'CONTONANCE_BACKEND_URL'
+              value: 'http://contonance-backend/api/message/receive'
             }
             {
               name: 'Message.Creator__EnableRetry'

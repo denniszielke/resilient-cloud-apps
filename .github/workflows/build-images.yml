@@ -19,8 +19,8 @@ defaults:
 
 env:
   CREATOR_IMAGE_NAME: message-creator
-  RECEIVER_IMAGE_NAME: message-receiver
-  SINK_IMAGE_NAME: message-sink
+  RECEIVER_IMAGE_NAME: contonance-backend
+  SINK_IMAGE_NAME: enterprise-warehouse-backend
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -40,9 +40,9 @@ jobs:
         run: |
           cd Message.Creator
           docker build . --file Dockerfile --tag $CREATOR_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../Message.Receiver
+          cd ../Contonance.Backend
           docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../Message.Sink
+          cd ../EnterpriseWarehouse.Backend
           docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
         
       - name: Log in to registry

@@ -2,12 +2,12 @@ using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
-using Message.Receiver.Clients;
+using Contonance.Backend.Clients;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 
-namespace Message.Receiver.Background
+namespace Contonance.Backend.Background
 {
     public class EventConsumer : IHostedService
     {

@@ -1,10 +1,10 @@
-using Message.Receiver.Clients;
+using Contonance.Backend.Clients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using System.Threading.Tasks;
 
-namespace Message.Receiver.Controllers
+namespace Contonance.Backend.Controllers
 {
 
     [ApiController]

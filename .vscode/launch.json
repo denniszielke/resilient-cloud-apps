@@ -7,13 +7,13 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": [ "Creator", "Receiver", "Sink"],
+            "configurations": [ "Message.Creator", "Contonance.Backend", "EnterpriseWarehouse.Backend"],
             "stopAll": true
         }
     ],
     "configurations": [
         {
-            "name": "Creator",
+            "name": "Message.Creator",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-creator",
@@ -28,13 +28,13 @@
             },
         },       
         {
-            "name": "Receiver",
+            "name": "Contonance.Backend",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-receiver",
-            "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
+            "program": "${workspaceFolder}/src/Contonance.Backend/bin/Debug/net6.0/Contonance.Backend.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Receiver",
+            "cwd": "${workspaceFolder}/src/Contonance.Backend",
             "stopAtEntry": false,
             "envFile": "${workspaceFolder}/local.env",
             "serverReadyAction": {
@@ -43,13 +43,13 @@
             },
         },
         {
-            "name": "Sink",
+            "name": "EnterpriseWarehouse.Backend",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-sink",
-            "program": "${workspaceFolder}/src/Message.Sink/bin/Debug/net6.0/Message.Sink.dll",
+            "preLaunchTask": "build-warehouse",
+            "program": "${workspaceFolder}/src/EnterpriseWarehouse.Backend/bin/Debug/net6.0/EnterpriseWarehouse.Backend.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Sink",
+            "cwd": "${workspaceFolder}/src/EnterpriseWarehouse.Backend",
             "stopAtEntry": false,
             "envFile": "${workspaceFolder}/local.env",
             "serverReadyAction": {

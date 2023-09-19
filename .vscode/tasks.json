@@ -18,24 +18,24 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-receiver",
+            "label": "build-contonance-backend",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-sink",
+            "label": "build-enterprise-warehouse",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Message.Sink/Message.Sink.csproj",
+                "${workspaceFolder}/src/EnterpriseWarehouse.Backend/EnterpriseWarehouse.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -47,8 +47,8 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
-                "${workspaceFolder}/src/Message.Sink/Message.Sink.csproj",
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj",
+                "${workspaceFolder}/src/EnterpriseWarehouse.Backend/EnterpriseWarehouse.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -62,7 +62,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj"
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

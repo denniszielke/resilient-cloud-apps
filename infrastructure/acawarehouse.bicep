@@ -2,7 +2,7 @@ param containerAppEnvId string
 
 param location string = resourceGroup().location
 
-param appName string = 'message-sink'
+param appName string = 'enterprise-warehouse-backend'
 
 param appInsightsName string
 
@@ -57,8 +57,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://+:8080'
             }
             {
-              name: 'SINK_URL'
-              value: 'http://message-sink/api/message/receive'
+              name: 'ENTERPRISE_WAREHOUSE_BACKEND_URL'
+              value: 'http://enterprise-warehouse-backend/api/message/receive'
             }
             {
               name: 'IpRateLimiting__EnableEndpointRateLimiting'

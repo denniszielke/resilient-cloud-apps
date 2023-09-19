@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace Message.Receiver.Clients
+namespace Contonance.Backend.Clients
 {
     public class SinkClient
     {
