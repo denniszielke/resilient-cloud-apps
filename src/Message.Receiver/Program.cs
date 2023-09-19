@@ -6,6 +6,9 @@ using Polly;
 using Message.Receiver.Clients;
 using Microsoft.ApplicationInsights.Extensibility;
 using Polly.Extensions.Http;
+using Polly.Contrib.Simmy;
+using System.Net;
+using Polly.Contrib.Simmy.Outcomes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,8 +68,15 @@ var breakerPolicy = HttpPolicyExtensions
     .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
     .CircuitBreakerAsync(
         handledEventsAllowedBeforeBreaking: 3,
-        durationOfBreak: TimeSpan.FromSeconds(30)
+        durationOfBreak: TimeSpan.FromSeconds(5)
     );
+
+var result = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
+var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
+	with.Result(result)
+		.InjectionRate(0.5)
+		.Enabled()
+);
 
 var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 
@@ -75,21 +85,30 @@ builder.Services.AddHttpClient("Sink", client =>
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("SINK_URL"));
 }).AddPolicyHandler(request => {
 
+    var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
+
     bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
     bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
+    bool enableRateLimiting = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRateLimiting");
 
-    Console.WriteLine("Retry is set to: " + enableRetry);
-    Console.WriteLine("Breaker is set to: " + enableBreaker);
-
-    if (!enableBreaker && enableRetry) {
-        return retryPolicy;
-    } else if (enableBreaker && !enableRetry) {
-        return breakerPolicy;
-    } else if (enableBreaker && enableRetry) {
-        return Policy.WrapAsync(retryPolicy, breakerPolicy);
-    } else {
-       return  noOpPolicy;
+    if (enableRetry) {
+        policies.Add(retryPolicy);
+    } 
+    
+    if (enableBreaker) {
+        policies.Add(breakerPolicy);
     }
+
+    if (enableRateLimiting) {
+        policies.Add(chaosPolicy);
+    }
+
+    if (policies.Count == 0) {
+        policies.Add(noOpPolicy);
+    }
+
+    //Policy.WrapAsync throws an error if only one policy is passed in
+    return policies.Count < 2 ? policies[0] : Policy.WrapAsync(policies.ToArray());
 }
 );
 
