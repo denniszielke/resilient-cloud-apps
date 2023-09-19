@@ -88,7 +88,7 @@
         await Ask(null);
     }
 
-    private async Task Ask(EditContext editContext)
+    private async Task Ask(EditContext? editContext)
     {
         isSubmitting = true;
         isError = string.IsNullOrWhiteSpace(question);

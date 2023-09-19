@@ -1,4 +1,5 @@
 ﻿@page "/repairtasks"
+@using Contonance.Shared;
 @using Contonance.WebPortal.Shared
 @inject HttpClient Http
 
@@ -53,7 +54,7 @@ else
 @code {
     private RepairReport[]? reports;
 
-    private RepairReport reportToShow;
+    private RepairReport? reportToShow;
 
     protected override async Task OnInitializedAsync()
     {

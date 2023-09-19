@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <ScopedCssEnabled>false</ScopedCssEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Contonance.WebPortal.Shared.csproj" />
+    <ProjectReference Include="..\..\Contonance.Shared\Contonance.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Contonance.WebPortal.Shared;
+namespace Contonance.Shared;
 
 public class RepairReport
 {

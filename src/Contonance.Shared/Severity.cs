@@ -1,4 +1,4 @@
-namespace Contonance.WebPortal.Shared;
+namespace Contonance.Shared;
 
 public enum Severity
 {

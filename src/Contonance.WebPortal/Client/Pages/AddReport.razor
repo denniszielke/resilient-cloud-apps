@@ -1,4 +1,5 @@
 ﻿@page "/addreport"
+@using Contonance.Shared;
 @using Contonance.WebPortal.Shared
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient Http
@@ -15,7 +16,7 @@
 
     <div class="mb-3">
         <label for="inputTitle" class="form-label">Title*</label>
-        <InputText @bind-Value="Report.Title" @ref=inputTextForFocus class="form-control" id="inputTitle" />
+        <InputText @bind-Value="Report!.Title" @ref=inputTextForFocus class="form-control" id="inputTitle" />
         <ValidationMessage For="@(() => Report.Title)" />
     </div>
 
