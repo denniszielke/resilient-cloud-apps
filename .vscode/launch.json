@@ -7,7 +7,12 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": [ "Message.Creator", "Contonance.Backend", "EnterpriseWarehouse.Backend"],
+            "configurations": [
+                "Message.Creator",
+                "Contonance.WebPortal",
+                "Contonance.Backend",
+                "EnterpriseWarehouse.Backend"
+            ],
             "stopAll": true
         }
     ],
@@ -26,7 +31,17 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
             },
-        },       
+        },
+        {
+            "name": "Contonance.WebPortal",
+            "type": "blazorwasm",
+            "request": "launch",
+            "preLaunchTask": "build-contonance-webportal",
+            "cwd": "${workspaceFolder}/src/Contonance.WebPortal/Server",
+            "envFile": "${workspaceFolder}/local.env",
+            "url": "https://localhost:7217",
+            "browser": "edge"
+        },
         {
             "name": "Contonance.Backend",
             "type": "coreclr",
@@ -36,11 +51,7 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/Contonance.Backend",
             "stopAtEntry": false,
-            "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
+            "envFile": "${workspaceFolder}/local.env"
         },
         {
             "name": "EnterpriseWarehouse.Backend",
@@ -51,11 +62,7 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/EnterpriseWarehouse.Backend",
             "stopAtEntry": false,
-            "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
+            "envFile": "${workspaceFolder}/local.env"
         },
         {
             "name": ".NET Core Attach",

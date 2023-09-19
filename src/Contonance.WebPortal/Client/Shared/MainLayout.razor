@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+@inject OnlineStatusInterop OnlineStatusInterop
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if(IsOnline)
+            {
+                <strong class="text-success">Online</strong>
+            }
+            else
+            {
+                <strong class="text-danger">Offline</strong>
+            }
+            &nbsp;|&nbsp;
+            <a href="https://github.com/jplck/resilient-cloud-apps/" target="_blank">Get Support</a>
+        </div>
+
+        <article class="content px-4">
+             @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsOnline { get; set; }
+    public EventCallback<bool>? IsOnlineChanged { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        OnlineStatusInterop.OnlineStatusChanged += (s, v) =>
+        {
+            IsOnline = v;
+            IsOnlineChanged?.InvokeAsync(v);
+            StateHasChanged();
+        };
+        await OnlineStatusInterop.Initialize();
+    }
+}

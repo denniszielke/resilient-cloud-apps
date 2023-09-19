@@ -2,6 +2,7 @@
 // kill -9 $(lsof -t -i:"9092")  
 // lsof -nP -iTCP -sTCP:LISTEN | grep 9093
 // kill -9 $(lsof -t -i:"9093")  
+// fuser -k 7217/tcp
 {
     "version": "2.0.0",
     "tasks": [
@@ -15,6 +16,22 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-contonance-webportal",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/Contonance.WebPortal/Server/Contonance.WebPortal.Server.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
             "problemMatcher": "$msCompile"
         },
         {
@@ -47,6 +64,7 @@
             "type": "process",
             "args": [
                 "publish",
+                "${workspaceFolder}/src/Contonance.WebPortal/Server/Contonance.WebPortal.Server.csproj",
                 "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj",
                 "${workspaceFolder}/src/EnterpriseWarehouse.Backend/EnterpriseWarehouse.Backend.csproj",
                 "/property:GenerateFullPaths=true",

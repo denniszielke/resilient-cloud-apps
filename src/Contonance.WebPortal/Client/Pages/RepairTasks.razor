@@ -1,0 +1,67 @@
+﻿@page "/repairtasks"
+@using Contonance.WebPortal.Shared
+@inject HttpClient Http
+
+<PageTitle>Repair Tasks</PageTitle>
+
+<h1>Repair Tasks</h1>
+
+@if (reports == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Severity</th>
+            <th scope="col">Due Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var report in reports)
+            {
+                <tr role="button" @onclick="@(() => ShowReport(report))"
+                    class="@(report == reportToShow ? "table-active" : "")">
+                    <td><a @onclick:preventDefault href="#">@report.Title</a></td>
+                    <td
+                        class="@(report.Severity == Severity.High ? "table-danger" : "") @(report.Severity == Severity.Medium ? "table-warning" : "")">
+                        @report.Severity</td>
+                    <td>@report.DueDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (reportToShow != null)
+{
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">@reportToShow.Title</h5>
+        <h6
+            class="card-subtitle mb-2 text-body-secondary @(reportToShow.Severity == Severity.High ? "text-danger" : "") @(reportToShow.Severity == Severity.Medium ? "text-warning" : "")">
+            @reportToShow.Severity</h6>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Due: @reportToShow.DueDate</h6>
+        <p class="card-text">@reportToShow.Details</p>
+    </div>
+</div>
+}
+
+@code {
+    private RepairReport[]? reports;
+
+    private RepairReport reportToShow;
+
+    protected override async Task OnInitializedAsync()
+    {
+        reports = await Http.GetFromJsonAsync<RepairReport[]>("RepairReports");
+    }
+
+    private void ShowReport(RepairReport report)
+    {
+        reportToShow = report;
+    }
+}
