@@ -45,6 +45,6 @@ public class RepairReportsController : ControllerBase
         }
 
         await _eventHubClient.SendAsync(eventBatch);
-        _logger.LogDebug($"send repairReport {repairReport.Title} to eventhub");
+        _logger.LogDebug($"send repairReport {repairReport.Title} to eventhub {_eventHubClient.EventHubName}");
     }
 }

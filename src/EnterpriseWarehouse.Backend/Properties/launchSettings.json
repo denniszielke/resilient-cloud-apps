@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Message.Sink": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,

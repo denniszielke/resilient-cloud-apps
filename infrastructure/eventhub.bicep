@@ -1,4 +1,3 @@
-
 @description('Specifies the Azure location for all resources.')
 param location string = resourceGroup().location
 
@@ -19,12 +18,16 @@ resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
   }
 }
 
-resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
+resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2022-10-01-preview' = {
   parent: eventHubNamespace
   name: eventHubName
   properties: {
-    messageRetentionInDays: 7
-    partitionCount: 32
+    // using a single partition only for demo purposes
+    partitionCount: 1
+    retentionDescription: {
+      cleanupPolicy: 'Delete'
+      retentionTimeInHours: 1
+    }
   }
 }
 

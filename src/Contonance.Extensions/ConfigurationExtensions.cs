@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using Polly;
+using Microsoft.Extensions.Configuration;
 
 public static class ConfigurationExtensions
 {

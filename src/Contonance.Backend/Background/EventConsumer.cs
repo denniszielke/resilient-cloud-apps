@@ -21,7 +21,7 @@ namespace Contonance.Backend.Background
 
         private EventProcessorClient _processor;
 
-        private const int EventsBeforeCheckpoint = 25;
+        private const int EventsBeforeCheckpoint = 2; // Just for demo purposes
         private ConcurrentDictionary<string, int> _partitionEventCount = new ConcurrentDictionary<string, int>();
 
         public EventConsumer(IConfiguration configuration,
@@ -79,7 +79,7 @@ namespace Contonance.Backend.Background
                 _logger.LogInformation(data);
 
                 var repairReport = JsonSerializer.Deserialize<RepairReport>(data, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
-                _repairReportsRepository.Add(repairReport);
+                _repairReportsRepository.AddIfNew(repairReport);
 
                 // For example: extract repair parts to order from the repairReport
                 var sampleRepairPartId = Random.Shared.Next(100, 999);

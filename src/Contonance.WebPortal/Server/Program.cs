@@ -1,17 +1,8 @@
-using System.Net;
-using System.Text.Json;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Azure;
 using Azure;
+using Contonance.Extensions;
 using Contonance.WebPortal.Server.Clients;
-using Polly;
-using Polly.Contrib.Simmy;
-using Polly.Contrib.Simmy.Outcomes;
-using Polly.Extensions.Http;
-using System.Diagnostics;
-
-const string FEATURE_FLAG_PREFIX = "featureManagement:Message.Creator"; // TODO: naming
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +34,8 @@ builder.Services.AddLogging(config =>
     config.AddConsole();
 });
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
+builder.Services.AddSingleton<ITelemetryInitializer>(_ => new CloudRoleNameTelemetryInitializer("Contonance.WebPortal.Server"));
+
 
 builder.Services.AddAzureAppConfiguration();
 builder.Services.AddAzureClients(b =>
@@ -51,67 +43,10 @@ builder.Services.AddAzureClients(b =>
     b.AddEventHubProducerClient(builder.Configuration.GetValue<string>("EventHub:EventHubConnectionString"), builder.Configuration.GetValue<string>("EventHub:EventHubName"));
     b.AddOpenAIClient(new Uri(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiServiceEndpoint")), new AzureKeyCredential(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiKey")));
 });
-builder.Services.AddSingleton<ContonanceBackendClient, ContonanceBackendClient>();
 
-var retryPolicy = HttpPolicyExtensions
-    .HandleTransientHttpError()
-    .WaitAndRetryAsync(new[]
-    {
-        TimeSpan.FromSeconds(0.5),
-        TimeSpan.FromSeconds(1),
-        TimeSpan.FromSeconds(5)
-    });
-
-var breakerPolicy = HttpPolicyExtensions
-    .HandleTransientHttpError()
-    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-    .CircuitBreakerAsync(
-        handledEventsAllowedBeforeBreaking: 3,
-        durationOfBreak: TimeSpan.FromSeconds(30)
-    );
-
-var result = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
-var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
-    with.Result(result)
-        .InjectionRate(0.5)
-        .Enabled()
-);
-
-var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
-
-builder.Services.AddHttpClient<ContonanceBackendClient>()
-    .AddPolicyHandler(request =>
-    {
-        // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
-        var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
-
-        bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
-        bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
-        bool enableRateLimiting = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRateLimiting");
-
-        if (enableRetry)
-        {
-            policies.Add(retryPolicy);
-        }
-
-        if (enableBreaker)
-        {
-            policies.Add(breakerPolicy);
-        }
-
-        if (enableRateLimiting)
-        {
-            policies.Add(chaosPolicy);
-        }
-
-        if (policies.Count == 0)
-        {
-            policies.Add(noOpPolicy);
-        }
-
-        //Policy.WrapAsync throws an error if only one policy is passed in
-        return policies.Count < 2 ? policies[0] : Policy.WrapAsync(policies.ToArray());
-    });
+builder.Services
+    .AddHttpClient<ContonanceBackendClient>()
+    .AddPolicyConfiguration(ContonanceBackendClient.SelectPolicy, builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -130,7 +65,6 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 
 app.UseAzureAppConfiguration();
 

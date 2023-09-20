@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Message.Receiver": {
+    "Contonance.Backend": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
