@@ -3,8 +3,7 @@ WORKDIR /source
 
 # copy csproj and restore as distinct layers
 
-COPY ./Contonance.Shared ./Contonance.Shared/
-COPY ./Contonance.Backend ./Contonance.Backend/
+COPY . .
 WORKDIR /source/Contonance.Backend/
 RUN dotnet restore
 

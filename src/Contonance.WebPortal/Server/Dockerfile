@@ -1,8 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /source
 
-COPY ./Contonance.Shared ./Contonance.Shared/
-COPY ./Contonance.WebPortal ./Contonance.WebPortal/
+COPY . .
 
 WORKDIR /source/Contonance.WebPortal/Server
 RUN dotnet restore
