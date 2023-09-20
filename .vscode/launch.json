@@ -22,7 +22,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-creator",
-            "program": "${workspaceFolder}/src/Message.Creator/bin/Debug/net6.0/Message.Creator.dll",
+            "program": "${workspaceFolder}/src/Message.Creator/bin/Debug/net7.0/Message.Creator.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Message.Creator",
             "stopAtEntry": false,
