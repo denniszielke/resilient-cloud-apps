@@ -20,17 +20,12 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSingleton<ITelemetryInitializer>(_ => new CloudRoleNameTelemetryInitializer("EnterpriseWarehouse.Backend"));
 
 builder.Services.AddOptions();
-bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");
-Console.WriteLine("Rate limiting is set to: " + enableRateLimiting);
 
-if (enableRateLimiting)
-{
-    builder.Services.AddMemoryCache();
-    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-    builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
-    builder.Services.AddInMemoryRateLimiting();
-    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-}
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 builder.Services.AddSingleton(
     s =>
@@ -52,8 +47,6 @@ var app = builder.Build();
 
 app.MapControllers();
 
-if (enableRateLimiting)
-{
-    app.UseIpRateLimiting();
-}
+app.UseIpRateLimiting();
+
 app.Run();

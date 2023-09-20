@@ -42,10 +42,10 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 });
 
 builder.Services.AddAzureAppConfiguration();
-
 builder.Services
     .AddHttpClient<EnterpriseWarehouseClient>()
     .AddPolicyConfiguration(EnterpriseWarehouseClient.SelectPolicy, builder.Configuration);
+
 builder.Services.AddHostedService<EventConsumer>();
 
 var app = builder.Build();

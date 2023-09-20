@@ -71,14 +71,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://contonance-backend/api/message/receive'
             }
             {
-              name: 'Message.Creator__EnableRetry'
-              value: 'false'
-            }
-            {
-              name: 'Message.Creator__EnableBreaker'
-              value: 'false'
-            }
-            {
               name: 'ApplicationInsights__ConnectionString'
               value: appInsights.properties.ConnectionString
             }

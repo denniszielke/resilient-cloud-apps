@@ -67,7 +67,7 @@ public class MessageCosmosSqlStorageService : IMessageStorageService
             throw new Exception("Container was null");
         }
 
-        var response = await container.CreateItemAsync(newOrder, new PartitionKey(repairPartId));
+        var response = await container.CreateItemAsync(newOrder, new PartitionKey(newOrderId)); // TODO :repairPartId
         _logger.LogTrace("Insert of item consumed {0} request units", response.RequestCharge);
 
 

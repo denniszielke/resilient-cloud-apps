@@ -61,10 +61,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://enterprise-warehouse-backend/api/message/receive'
             }
             {
-              name: 'IpRateLimiting__EnableEndpointRateLimiting'
-              value: 'false'
-            }
-            {
               name: 'ConnectionStrings__CosmosApi'
               value: cosmosDb.listConnectionStrings().connectionStrings[0].connectionString
             }

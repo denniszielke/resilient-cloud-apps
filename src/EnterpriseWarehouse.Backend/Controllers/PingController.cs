@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace EnterpriseWarehouse.Backend.Controllers { 
+namespace EnterpriseWarehouse.Backend.Controllers
+{
 
     [ApiController]
     [Route("[controller]")]
@@ -23,7 +24,7 @@ namespace EnterpriseWarehouse.Backend.Controllers {
         [HttpGet("/getversion", Name = "getversion")]
         public string GetVersion()
         {
-            return Environment.GetEnvironmentVariable("VERSION");
+            return Environment.GetEnvironmentVariable("VERSION")!;
         }
     }
 }

@@ -73,14 +73,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               value: 'http://enterprise-warehouse-backend/api/message/receive'
             }
             {
-              name: 'Contonance.Backend__EnableRetry'
-              value: 'false'
-            }
-            {
-              name: 'Contonance.Backend__EnableBreaker'
-              value: 'false'
-            }
-            {
               name: 'ApplicationInsights__ConnectionString'
               value: appInsights.properties.ConnectionString
             }

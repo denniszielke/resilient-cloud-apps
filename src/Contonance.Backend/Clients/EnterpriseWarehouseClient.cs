@@ -26,42 +26,33 @@ namespace Contonance.Backend.Clients
         {
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .WaitAndRetryAsync(new[]
+                .WaitAndRetryWithLoggingAsync(new[]
                 {
                     TimeSpan.FromSeconds(0.5),
                     TimeSpan.FromSeconds(1),
                     TimeSpan.FromSeconds(5)
-                });
+                })
+                .WithPolicyKey($"{nameof(EnterpriseWarehouseClient)}RetryPolicy");
 
-            var circuitBreakerPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-                .CircuitBreakerAsync(
-                    handledEventsAllowedBeforeBreaking: 3,
-                    durationOfBreak: TimeSpan.FromSeconds(5)
-                );
-
-            var result = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
-            var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
-                with.Result(result)
+            var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
+                with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
                     .InjectionRate(0.5)
                     .Enabled()
-            );
+                );
 
-            var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
-
-            builder.AddPolicyHandler(request =>
+            builder.AddPolicyHandler((services, request) =>
             {
-                // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
-                var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableRetryPolicy", retryPolicy);
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableCircuitBreakerPolicy", circuitBreakerPolicy);
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", chaosPolicy);
+                var logger = services.GetService<ILogger<EnterpriseWarehouseClient>>();
+                var context = new Context().WithLogger(logger);
+                request.SetPolicyExecutionContext(context);
 
-                if (policies.Count == 0)
+                // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
+                var policies = new List<IAsyncPolicy<HttpResponseMessage>>
                 {
-                    return noOpPolicy;
-                }
+                    retryPolicy
+                };
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", injectRateLimitingFaultsPolicy);
+
                 return policies.Wrap();
             }
             );

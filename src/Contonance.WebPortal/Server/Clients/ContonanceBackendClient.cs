@@ -5,6 +5,7 @@ using Polly;
 using System.Net;
 using Polly.Contrib.Simmy;
 using Polly.Contrib.Simmy.Outcomes;
+using Polly.Contrib.Simmy.Latency;
 using Contonance.Extensions;
 
 namespace Contonance.WebPortal.Server.Clients;
@@ -28,12 +29,14 @@ public class ContonanceBackendClient
     {
         var retryPolicy = HttpPolicyExtensions
             .HandleTransientHttpError()
-            .WaitAndRetryAsync(new[]
+            .WaitAndRetryWithLoggingAsync(new[]
             {
                 TimeSpan.FromSeconds(0.5),
                 TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(5)
-            });
+            })
+            .WithPolicyKey($"{nameof(ContonanceBackendClient)}RetryPolicy");
+
 
         var breakerPolicy = HttpPolicyExtensions
             .HandleTransientHttpError()
@@ -43,22 +46,32 @@ public class ContonanceBackendClient
                 durationOfBreak: TimeSpan.FromSeconds(30)
             );
 
-        var result = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
-        var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
-            with.Result(result)
+        var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
+            with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
                 .InjectionRate(0.5)
                 .Enabled()
-        );
+            );
+
+        var injectLatencyFaultsPolicy = MonkeyPolicy.InjectLatencyAsync<HttpResponseMessage>(with =>
+            with.Latency(TimeSpan.FromSeconds(10))
+                .InjectionRate(0.5)
+                .Enabled()
+            );
 
         var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 
-        builder.AddPolicyHandler(request =>
+        builder.AddPolicyHandler((services, request) =>
             {
+                var logger = services.GetService<ILogger<ContonanceBackendClient>>();
+                var context = new Context().WithLogger(logger);
+                request.SetPolicyExecutionContext(context);
+
                 // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
                 var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
                 policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableRetryPolicy", retryPolicy);
                 policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableCircuitBreakerPolicy", breakerPolicy);
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", chaosPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", injectRateLimitingFaultsPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectLatencyFaults", injectLatencyFaultsPolicy);
 
                 if (policies.Count == 0)
                 {
