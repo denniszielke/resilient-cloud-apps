@@ -1,10 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.Extensions.Azure;
 using AspNetCoreRateLimit;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -24,7 +17,7 @@ builder.Services.AddLogging(config =>
 });
 
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
+builder.Services.AddSingleton<ITelemetryInitializer>(_ => new CloudRoleNameTelemetryInitializer("EnterpriseWarehouse.Backend"));
 
 builder.Services.AddOptions();
 bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");

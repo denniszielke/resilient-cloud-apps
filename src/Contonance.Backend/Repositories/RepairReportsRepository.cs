@@ -33,7 +33,7 @@ namespace Contonance.Backend.Repositories
             return _inmemoryData;
         }
 
-        public void Add(RepairReport repairReport)
+        public void AddIfNew(RepairReport repairReport)
         {
             var alreadySavedReport = _inmemoryData.FirstOrDefault(_ => _.Id == repairReport.Id);
             if (alreadySavedReport == null)

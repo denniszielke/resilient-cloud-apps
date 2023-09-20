@@ -24,7 +24,7 @@ namespace Contonance.Backend.Controllers
         [HttpGet("/getversion", Name = "getversion")]
         public string GetVersion()
         {
-            return Environment.GetEnvironmentVariable("VERSION");
+            return Environment.GetEnvironmentVariable("VERSION")!;
         }
     }
 }

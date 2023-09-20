@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Client\Contonance.WebPortal.Client.csproj" />
     <ProjectReference Include="..\Shared\Contonance.WebPortal.Shared.csproj" />
     <ProjectReference Include="..\..\Contonance.Shared\Contonance.Shared.csproj" />
+    <ProjectReference Include="..\..\Contonance.Extensions\Contonance.Extensions.csproj" />
   </ItemGroup>
 
 
