@@ -56,9 +56,9 @@ public class ContonanceBackendClient
             {
                 // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
                 var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableRetry", retryPolicy);
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableBreaker", breakerPolicy);
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableRateLimiting", chaosPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableRetryPolicy", retryPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:EnableCircuitBreakerPolicy", breakerPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", chaosPolicy);
 
                 if (policies.Count == 0)
                 {
