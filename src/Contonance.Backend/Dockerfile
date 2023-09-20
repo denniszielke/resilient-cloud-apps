@@ -2,7 +2,10 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
-COPY . .
+
+COPY ./Contonance.Shared ./Contonance.Shared/
+COPY ./Contonance.Backend ./Contonance.Backend/
+WORKDIR /source/Contonance.Backend/
 RUN dotnet restore
 
 RUN dotnet publish -c release -o /app --self-contained false --no-restore

@@ -39,12 +39,9 @@ jobs:
 
       - name: Build image
         run: |
-          cd Contonance.Backend
-          docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../EnterpriseWarehouse.Backend
-          docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../
-          docker build . --file Dockerfile --tag $WEB_PORTAL_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./Contonance.Backend/Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./EnterpriseWarehouse.Backend/Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./Contonance.WebPortal/Server/Dockerfile --tag $WEB_PORTAL_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
         
       - name: Log in to registry
         # This is where you will update the PAT to GITHUB_TOKEN
