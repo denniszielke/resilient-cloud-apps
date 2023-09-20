@@ -39,7 +39,7 @@ jobs:
 
       - name: Build image
         run: |
-          cd ../Contonance.Backend
+          cd Contonance.Backend
           docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
           cd ../EnterpriseWarehouse.Backend
           docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
