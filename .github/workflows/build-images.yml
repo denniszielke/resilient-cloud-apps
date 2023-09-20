@@ -45,7 +45,7 @@ jobs:
           docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
           cd ../EnterpriseWarehouse.Backend
           docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../Contonance.WebPortal/Server
+          cd ../
           docker build . --file Dockerfile --tag $WEB_PORTAL_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
         
       - name: Log in to registry
