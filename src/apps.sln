@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contonance.WebPortal.Shared
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnterpriseWarehouse.Backend", "EnterpriseWarehouse.Backend\EnterpriseWarehouse.Backend.csproj", "{A174C30D-DBA3-413C-9652-F89E1D0B35FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Message.Creator", "Message.Creator\Message.Creator.csproj", "{064CB394-6AAF-4258-9C62-A623268B9B61}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABAD9F7A-E400-4973-9D96-4663CB0C0A60}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -54,10 +52,6 @@ Global
 		{A174C30D-DBA3-413C-9652-F89E1D0B35FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A174C30D-DBA3-413C-9652-F89E1D0B35FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A174C30D-DBA3-413C-9652-F89E1D0B35FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{064CB394-6AAF-4258-9C62-A623268B9B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{064CB394-6AAF-4258-9C62-A623268B9B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{064CB394-6AAF-4258-9C62-A623268B9B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{064CB394-6AAF-4258-9C62-A623268B9B61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

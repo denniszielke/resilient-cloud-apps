@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Polly;
+
 public static class ConfigurationExtensions
 {
     public static string GetNoEmptyStringOrThrow(this IConfiguration configuration, string key)

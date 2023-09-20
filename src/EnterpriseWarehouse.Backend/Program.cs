@@ -26,13 +26,6 @@ builder.Services.AddLogging(config =>
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
 
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNameCaseInsensitive = true;
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.WriteIndented = true;
-});
-
 builder.Services.AddOptions();
 bool enableRateLimiting = builder.Configuration.GetValue<bool>("IpRateLimiting:EnableEndpointRateLimiting");
 Console.WriteLine("Rate limiting is set to: " + enableRateLimiting);

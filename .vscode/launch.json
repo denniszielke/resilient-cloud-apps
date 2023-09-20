@@ -8,30 +8,14 @@
         {
             "name": "All",
             "configurations": [
-                "Message.Creator",
-                "Contonance.WebPortal",
+                "EnterpriseWarehouse.Backend",
                 "Contonance.Backend",
-                "EnterpriseWarehouse.Backend"
+                "Contonance.WebPortal"
             ],
             "stopAll": true
         }
     ],
     "configurations": [
-        {
-            "name": "Message.Creator",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-creator",
-            "program": "${workspaceFolder}/src/Message.Creator/bin/Debug/net7.0/Message.Creator.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Creator",
-            "stopAtEntry": false,
-            "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
-        },
         {
             "name": "Contonance.WebPortal",
             "type": "blazorwasm",
@@ -40,14 +24,14 @@
             "cwd": "${workspaceFolder}/src/Contonance.WebPortal/Server",
             "envFile": "${workspaceFolder}/local.env",
             "url": "https://localhost:7217",
-            "browser": "edge"
+            "browser": "edge",
         },
         {
             "name": "Contonance.Backend",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-contonance-backend",
-            "program": "${workspaceFolder}/src/Contonance.Backend/bin/Debug/net6.0/Contonance.Backend.dll",
+            "program": "${workspaceFolder}/src/Contonance.Backend/bin/Debug/net7.0/Contonance.Backend.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Contonance.Backend",
             "stopAtEntry": false,
@@ -58,7 +42,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-enterprise-warehouse",
-            "program": "${workspaceFolder}/src/EnterpriseWarehouse.Backend/bin/Debug/net6.0/EnterpriseWarehouse.Backend.dll",
+            "program": "${workspaceFolder}/src/EnterpriseWarehouse.Backend/bin/Debug/net7.0/EnterpriseWarehouse.Backend.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/EnterpriseWarehouse.Backend",
             "stopAtEntry": false,
