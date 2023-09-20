@@ -7,16 +7,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-creator",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/src/Message.Creator/Message.Creator.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+            "label": "Build All",
+            "dependsOn": [
+                "build-enterprise-warehouse",
+                "build-contonance-backend",
+                "build-contonance-webportal"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": []
         },
         {
             "label": "build-contonance-webportal",
@@ -28,10 +25,6 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
             "problemMatcher": "$msCompile"
         },
         {

@@ -9,8 +9,9 @@ using Polly;
 using Polly.Contrib.Simmy;
 using Polly.Contrib.Simmy.Outcomes;
 using Polly.Extensions.Http;
+using System.Diagnostics;
 
-const string FEATURE_FLAG_PREFIX = "featureManagement:Message.Creator";
+const string FEATURE_FLAG_PREFIX = "featureManagement:Message.Creator"; // TODO: naming
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,13 +44,6 @@ builder.Services.AddLogging(config =>
 });
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
-
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNameCaseInsensitive = true;
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.WriteIndented = true;
-});
 
 builder.Services.AddAzureAppConfiguration();
 builder.Services.AddAzureClients(b =>
@@ -85,36 +79,39 @@ var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
 
 var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 
-builder.Services.AddHttpClient("Sink", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration.GetNoEmptyStringOrThrow("CONTONANCE_BACKEND_URL"));
-}).AddPolicyHandler(request =>
-{
-    var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
-
-    bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
-    bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
-    bool enableRateLimiting = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRateLimiting");
-
-    if (enableRetry)
+builder.Services.AddHttpClient<ContonanceBackendClient>()
+    .AddPolicyHandler(request =>
     {
-        policies.Add(retryPolicy);
-    }
+        // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
+        var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
 
-    if (enableBreaker)
-    {
-        policies.Add(breakerPolicy);
-    }
+        bool enableRetry = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRetry");
+        bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
+        bool enableRateLimiting = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRateLimiting");
 
-    if (enableRateLimiting)
-    {
-        policies.Add(chaosPolicy);
-    }
+        if (enableRetry)
+        {
+            policies.Add(retryPolicy);
+        }
 
-    //Policy.WrapAsync throws an error if only one policy is passed in
-    return policies.Count < 2 ? noOpPolicy : Policy.WrapAsync(policies.ToArray());
-}
-);
+        if (enableBreaker)
+        {
+            policies.Add(breakerPolicy);
+        }
+
+        if (enableRateLimiting)
+        {
+            policies.Add(chaosPolicy);
+        }
+
+        if (policies.Count == 0)
+        {
+            policies.Add(noOpPolicy);
+        }
+
+        //Policy.WrapAsync throws an error if only one policy is passed in
+        return policies.Count < 2 ? policies[0] : Policy.WrapAsync(policies.ToArray());
+    });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

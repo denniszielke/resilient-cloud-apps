@@ -9,6 +9,7 @@ using Polly.Extensions.Http;
 using Polly.Contrib.Simmy;
 using System.Net;
 using Polly.Contrib.Simmy.Outcomes;
+using Contonance.Backend.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,24 +31,19 @@ builder.Services.AddLogging(config =>
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
 
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNameCaseInsensitive = true;
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.WriteIndented = true;
-});
-
 builder.Services.AddAzureClients(b =>
 {
     b.AddBlobServiceClient(builder.Configuration.GetValue<string>("EventHub:BlobConnectionString"));
 });
 
-builder.Services.AddSingleton<SinkClient, SinkClient>();
+builder.Services.AddSingleton<RepairReportsRepository, RepairReportsRepository>();
+builder.Services.AddSingleton<EnterpriseWarehouseClient, EnterpriseWarehouseClient>();
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
-        .UseFeatureFlags(options => {
+        .UseFeatureFlags(options =>
+        {
             options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
         });
 });
@@ -73,9 +69,9 @@ var breakerPolicy = HttpPolicyExtensions
 
 var result = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
 var chaosPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
-	with.Result(result)
-		.InjectionRate(0.5)
-		.Enabled()
+    with.Result(result)
+        .InjectionRate(0.5)
+        .Enabled()
 );
 
 var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
@@ -83,7 +79,8 @@ var noOpPolicy = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 builder.Services.AddHttpClient("Sink", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ENTERPRISE_WAREHOUSE_BACKEND_URL"));
-}).AddPolicyHandler(request => {
+}).AddPolicyHandler(request =>
+{
 
     var policies = new List<IAsyncPolicy<HttpResponseMessage>>();
 
@@ -91,19 +88,23 @@ builder.Services.AddHttpClient("Sink", client =>
     bool enableBreaker = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableBreaker");
     bool enableRateLimiting = builder.Configuration.GetValue<bool>($"{FEATURE_FLAG_PREFIX}:EnableRateLimiting");
 
-    if (enableRetry) {
+    if (enableRetry)
+    {
         policies.Add(retryPolicy);
-    } 
-    
-    if (enableBreaker) {
+    }
+
+    if (enableBreaker)
+    {
         policies.Add(breakerPolicy);
     }
 
-    if (enableRateLimiting) {
+    if (enableRateLimiting)
+    {
         policies.Add(chaosPolicy);
     }
 
-    if (policies.Count == 0) {
+    if (policies.Count == 0)
+    {
         policies.Add(noOpPolicy);
     }
 

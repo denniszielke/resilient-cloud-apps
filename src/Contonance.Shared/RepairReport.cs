@@ -4,7 +4,7 @@ namespace Contonance.Shared;
 
 public class RepairReport
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required, MinLength(3, ErrorMessage = "Please use a Title bigger than 3 letters."), MaxLength(100, ErrorMessage = "Please use a Title less than 100 letters.")]
     public string Title { get; set; }

@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Contonance.WebPortal.Shared;
 using Contonance.Shared;
+using Azure.Messaging.EventHubs.Producer;
+using System.Text.Json;
+using Azure.Messaging.EventHubs;
+using System.Text;
+using Contonance.WebPortal.Server.Clients;
 
 namespace Contonance.WebPortal.Server.Controllers;
 
@@ -8,31 +12,39 @@ namespace Contonance.WebPortal.Server.Controllers;
 [Route("[controller]")]
 public class RepairReportsController : ControllerBase
 {
-    private static readonly string[] Titles = new[]
-    {
-        "Hull breach in section 12",
-        "Engine malfunction",
-        "Broken airlock",
-        "Broken toilet",
-        "Broken replicator"
-    };
 
+    private readonly ContonanceBackendClient _contonanceBackendClient;
+    private readonly EventHubProducerClient _eventHubClient;
     private readonly ILogger<RepairReportsController> _logger;
 
-    public RepairReportsController(ILogger<RepairReportsController> logger)
+    public RepairReportsController(ContonanceBackendClient contonanceBackendClient, EventHubProducerClient eventHubClient, ILogger<RepairReportsController> logger)
     {
+        _contonanceBackendClient = contonanceBackendClient;
+        _eventHubClient = eventHubClient;
         _logger = logger;
     }
 
     [HttpGet]
-    public IEnumerable<RepairReport> Get()
+    public async Task<IList<RepairReport>> Get()
     {
-        return Enumerable.Range(0, 4).Select(index => new RepairReport
+        return await _contonanceBackendClient.GetAllRepairReports();
+    }
+
+    [HttpPost]
+    public async Task Add([FromBody] RepairReport repairReport)
+    {
+        repairReport.Id = Guid.NewGuid();
+        _logger.LogDebug($"received repairReport {repairReport.Id}:{repairReport.Title}");
+
+        using EventDataBatch eventBatch = await _eventHubClient.CreateBatchAsync();
+        string jsonString = JsonSerializer.Serialize(repairReport, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        var added = eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(jsonString)));
+        if (!added)
         {
-            Title = Titles[index],
-            DueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Severity = (Severity)Random.Shared.Next(0, 3)
-        })
-        .ToArray();
+            throw new Exception("Could not add repairReport to batch");
+        }
+
+        await _eventHubClient.SendAsync(eventBatch);
+        _logger.LogDebug($"send repairReport {repairReport.Title} to eventhub");
     }
 }

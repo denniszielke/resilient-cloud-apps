@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using Contonance.Shared;
 
@@ -6,42 +5,27 @@ namespace Contonance.WebPortal.Server.Clients;
 
 public class ContonanceBackendClient
 {
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
     private readonly ILogger<ContonanceBackendClient> _logger;
 
-    public ContonanceBackendClient(IHttpClientFactory httpClientFactory, ILogger<ContonanceBackendClient> logger)
+    public ContonanceBackendClient(HttpClient httpClient, IConfiguration configuration, ILogger<ContonanceBackendClient> logger)
     {
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
         _logger = logger;
+
+        _httpClient.BaseAddress = new Uri(configuration.GetNoEmptyStringOrThrow("CONTONANCE_BACKEND_URL"));
     }
 
     public async Task<IList<RepairReport>> GetAllRepairReports()
     {
-        var client = _httpClientFactory.CreateClient("Sink");
-        var response = await client.GetAsync("/api/message/receive");
-
-        Console.WriteLine(response.StatusCode);
+        var response = await _httpClient.GetAsync("/api/repairreports");
+        _logger.LogDebug(response.StatusCode.ToString());
 
         string responseBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(responseBody);
+        _logger.LogDebug(responseBody);
 
-        try
-        {
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonSerializer.Deserialize<IList<RepairReport>>(responseBody)!;
-            }
-            else
-            {
-                Console.WriteLine(response.StatusCode);
-                return null;
-            }
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            // TODO
-            throw;
-        }
+        response.EnsureSuccessStatusCode();
+
+        return JsonSerializer.Deserialize<IList<RepairReport>>(responseBody, new JsonSerializerOptions(JsonSerializerDefaults.Web));
     }
 }

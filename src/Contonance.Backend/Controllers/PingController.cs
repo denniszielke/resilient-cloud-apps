@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Contonance.Backend.Controllers { 
+namespace Contonance.Backend.Controllers
+{
 
     [ApiController]
     [Route("[controller]")]

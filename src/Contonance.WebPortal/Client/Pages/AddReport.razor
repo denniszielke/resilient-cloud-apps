@@ -3,6 +3,9 @@
 @using Contonance.WebPortal.Shared
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<AddReport> Logger
+@implements IDisposable
 
 <PageTitle>Add Report</PageTitle>
 
@@ -82,10 +85,13 @@
 
     async Task AddReportToBackend()
     {
-        @* var response = await HttpClient.PostAsJsonAsync(NavigationManager.BaseUri + "orders", OrderState.Order);
-var newOrderId = await response.Content.ReadFromJsonAsync<int>();
-OrderState.ResetOrder();
-NavigationManager.NavigateTo($"myorders/{newOrderId}"); *@
+        Logger.LogDebug($"AddReportToBackend called");
+        var response = await Http.PostAsJsonAsync("RepairReports", Report);
+        Logger.LogDebug($"received response {response.StatusCode}");
+
+        response.EnsureSuccessStatusCode();
+
+        NavigationManager.NavigateTo($"reportsubmitted");
     }
 
     public void Dispose()

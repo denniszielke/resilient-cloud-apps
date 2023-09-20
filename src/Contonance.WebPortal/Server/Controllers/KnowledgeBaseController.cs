@@ -83,7 +83,7 @@ public class KnowledgeBaseController : ControllerBase
         var message = chatCompletionsResponse.Value.Choices[0].Message;
 
         var contextMessage = message.AzureExtensionsContext.Messages[0].Content;
-        var chatExtensionContextMessage = JsonSerializer.Deserialize<ChatExtensionContextMessage>(contextMessage);
+        var chatExtensionContextMessage = JsonSerializer.Deserialize<ChatExtensionContextMessage>(contextMessage, new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         var kbResponse = new KnowledgeBaseResponse
         {

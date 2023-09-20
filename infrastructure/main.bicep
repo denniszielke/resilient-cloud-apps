@@ -52,7 +52,7 @@ module cosmosdbsql 'cosmosdb-sql.bicep' = {
   params: {
     location: location
     cosmosdbAccountName: 'dbs${projectName}'
-    cosmosdbDatabaseName: 'messages'
+    cosmosdbDatabaseName: 'repair_parts'
     autoscaleMaxThroughput: 400
   }
 }
