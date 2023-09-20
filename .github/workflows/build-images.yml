@@ -39,8 +39,6 @@ jobs:
 
       - name: Build image
         run: |
-          cd Message.Creator
-          docker build . --file Dockerfile --tag $CREATOR_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
           cd ../Contonance.Backend
           docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
           cd ../EnterpriseWarehouse.Backend
@@ -54,12 +52,6 @@ jobs:
 
       - name: Push image
         run: |
-          CREATOR_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$CREATOR_IMAGE_NAME
-          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
-          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:latest
-          docker push $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
-          docker push $CREATOR_IMAGE_ID:latest
-
           RECEIVER_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$RECEIVER_IMAGE_NAME
           docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:${GITHUB_RUN_ID}
           docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:latest
