@@ -11,4 +11,4 @@ RUN dotnet publish -c release -o /app --self-contained false --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
 WORKDIR /app
 COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "Contonance.Backend.dll"]
+ENTRYPOINT ["dotnet", "Contonance.WebPortal.dll"]
