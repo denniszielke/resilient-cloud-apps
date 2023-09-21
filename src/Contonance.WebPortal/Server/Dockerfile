@@ -5,7 +5,7 @@ COPY . .
 
 WORKDIR /source/Contonance.WebPortal/Server
 RUN dotnet restore
-RUN dotnet publish -c release -o /app --self-contained true --no-restore
+RUN dotnet publish -c release -o /app --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
