@@ -10,6 +10,8 @@ param imageTag string
 
 targetScope = 'subscription'
 
+var aiStorageContainerName = 'ai-data'
+
 resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   name: '${projectName}-rg'
   location: location
@@ -57,12 +59,25 @@ module cosmosdbsql 'cosmosdb-sql.bicep' = {
   }
 }
 
-module storage 'storage.bicep' = {
-  name: 'storage'
+module eh_storage 'storage.bicep' = {
+  name: 'ehstorage'
   scope: rg
   params: {
     location: location
-    storageAccountName: 'st${projectName}'
+    storageAccountName: 'ehst${projectName}'
+    containerNames: []
+  }
+}
+
+module ai_storage 'storage.bicep' = {
+  name: 'aistorage'
+  scope: rg
+  params: {
+    location: location
+    storageAccountName: 'aist${projectName}'
+    containerNames: [
+      aiStorageContainerName
+    ]
   }
 }
 
@@ -111,7 +126,7 @@ module acareceiver 'acacontonancebackend.bicep' = {
     eventHubName: eventhub.outputs.eventHubName
     eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
     eventHubAuthRuleName: eventhub.outputs.authRuleName
-    storageConnectionString: storage.outputs.blobStorageConnectionString
+    storageConnectionString: eh_storage.outputs.blobStorageConnectionString
     registryOwner: registryOwner
     imageTag: imageTag
     appConfigurationName: appconfig.outputs.appConfigurationName
@@ -128,5 +143,19 @@ module acasink 'acawarehouse.bicep' = {
     registryOwner: registryOwner
     imageTag: imageTag
     cosmosDbName: cosmosdbsql.outputs.name
+  }
+}
+
+module acawebportal 'acawebportal.bicep' = {
+  name: 'acawebportal'
+  scope: rg
+  params: {
+    containerAppEnvId: acaenv.outputs.containerAppEnvId
+    location: location
+    appInsightsName: logging.outputs.appInsightsName
+    registryOwner: registryOwner
+    imageTag: imageTag
+    storageAccountName: ai_storage.outputs.storageAccountName
+    containerName: aiStorageContainerName
   }
 }
