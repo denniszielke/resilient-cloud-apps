@@ -14,6 +14,8 @@ param storageAccountName string
 
 param containerName string
 
+param appConfigurationName string
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
 }
@@ -24,6 +26,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' existing 
 
 resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06-01' existing = {
   name: containerName
+}
+
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing = {
+  name: appConfigurationName
 }
 
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
@@ -97,6 +103,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             {
               name: 'AzureBlobContainerUrl'
               value: 'https://${storageAccount.name}.blob.core.windows.net/${storageContainer.name}'
+            }
+            {
+              name: 'AppConfiguration__ConnectionString'
+              value: appConfiguration.listKeys().value[0].connectionString
+            }
+            {
+              name: 'CONTONANCE_BACKEND_URL'
+              value: 'http://contonance-backend/'
             }
           ]
           probes: [
