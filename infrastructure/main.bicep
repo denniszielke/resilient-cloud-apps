@@ -163,12 +163,14 @@ module acawebportal 'acawebportal.bicep' = {
     eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
   }
 }
-/*
+
 module ai 'ai.bicep' = {
   name: 'ai'
   scope: rg
   params: {
     location: location
     openaiDeploymentName: 'openai-${projectName}'
+    documentIntDeploymentName: 'documentInt-${projectName}'
+    projectName: projectName
   }
-}*/
+}
