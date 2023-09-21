@@ -20,6 +20,10 @@ param imageTag string
 
 param appConfigurationName string
 
+var EHConnectionStringSecretName = 'eventhub-connection-string'
+var StorageConnectionStringSecretName = 'storage-connection-string'
+var StorageLeaseBlobName = 'keda-blob-lease'
+
 resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
   name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
 }
@@ -49,6 +53,16 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
           }
         ]
       }
+      secrets: [
+        {
+          name: EHConnectionStringSecretName
+          value: rule.listKeys().primaryConnectionString
+        }
+        {
+          name: StorageConnectionStringSecretName
+          value: storageConnectionString
+        }
+      ]
     }
     template: {
       containers: [
@@ -110,11 +124,25 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         maxReplicas: 2
         rules: [
           {
-            name: 'http-requests'
-            http: {
+            name: 'sb-keda-scale'
+            custom: {
+              type: 'azure-eventhub'
               metadata: {
-                concurrentRequests: '10'
+                consumerGroup: '$Default'
+                unprocessedEventThreshold: '64'
+                blobContainer: StorageLeaseBlobName
+                checkpointStrategy: 'blobMetadata'
               }
+              auth: [
+                {
+                  secretRef: EHConnectionStringSecretName
+                  triggerParameter: 'connection'
+                }
+                {
+                  secretRef: StorageConnectionStringSecretName
+                  triggerParameter: 'storageConnection'
+                }
+              ]
             }
           }
         ]
