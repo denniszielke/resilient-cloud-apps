@@ -157,5 +157,18 @@ module acawebportal 'acawebportal.bicep' = {
     imageTag: imageTag
     storageAccountName: ai_storage.outputs.storageAccountName
     containerName: aiStorageContainerName
+    appConfigurationName: appconfig.outputs.appConfigurationName
+    eventHubName: eventhub.outputs.eventHubName
+    eventHubAuthRuleName: eventhub.outputs.authRuleName
+    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
   }
 }
+/*
+module ai 'ai.bicep' = {
+  name: 'ai'
+  scope: rg
+  params: {
+    location: location
+    openaiDeploymentName: 'openai-${projectName}'
+  }
+}*/

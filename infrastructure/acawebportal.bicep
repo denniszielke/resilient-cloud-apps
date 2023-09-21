@@ -16,6 +16,12 @@ param containerName string
 
 param appConfigurationName string
 
+param eventHubNamespaceName string
+
+param eventHubName string
+
+param eventHubAuthRuleName string
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
 }
@@ -30,6 +36,10 @@ resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/contai
 
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing = {
   name: appConfigurationName
+}
+
+resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-01-01-preview' existing = {
+  name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
 }
 
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
@@ -111,6 +121,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             {
               name: 'CONTONANCE_BACKEND_URL'
               value: 'http://contonance-backend/'
+            }
+            {
+              name: 'EventHub__EventHubName'
+              value: eventHubName
+            }
+            {
+              name: 'EventHub__EventHubConnectionString'
+              value: rule.listKeys().primaryConnectionString
             }
           ]
           probes: [
