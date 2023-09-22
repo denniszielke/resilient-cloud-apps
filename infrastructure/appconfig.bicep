@@ -26,6 +26,9 @@ resource ContonanceWebPortalServerEnableRetryPolicyFeatureFlag 'Microsoft.AppCon
       id: 'Contonance.WebPortal.Server:EnableRetryPolicy'
       description: 'Enable retry on Contonance.WebPortal.Server for HTTP calls to Contonance.Backend'
       enabled: false
+      labels: [
+        'Contonance.WebPortal.Server'
+      ]
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
@@ -39,6 +42,9 @@ resource ContonanceWebPortalServerEnableCircuitBreakerPolicyFeatureFlag 'Microso
       id: 'Contonance.WebPortal.Server:EnableCircuitBreakerPolicy'
       description: 'Enable circuit breaker on Contonance.WebPortal.Server for HTTP calls to Contonance.Backend'
       enabled: false
+      labels: [
+        'Contonance.WebPortal.Server'
+      ]
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
@@ -52,6 +58,9 @@ resource ContonanceWebPortalServerInjectRateLimitingFaultsFeatureFlag 'Microsoft
       id: 'Contonance.WebPortal.Server:InjectRateLimitingFaults'
       description: 'Inject rate limiting faults on Contonance.WebPortal.Server for HTTP calls to Contonance.Backend'
       enabled: false
+      labels: [
+        'Contonance.WebPortal.Server'
+      ]
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
@@ -65,6 +74,9 @@ resource ContonanceWebPortalServerInjectLatencyFaultsFeatureFlag 'Microsoft.AppC
       id: 'Contonance.WebPortal.Server:InjectLatencyFaults'
       description: 'Inject latency faults on Contonance.WebPortal.Server for HTTP calls to Contonance.Backend'
       enabled: false
+      labels: [
+        'Contonance.WebPortal.Server'
+      ]
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
@@ -78,6 +90,9 @@ resource ContonanceBackendInjectRateLimitingFaultsFeatureFlag 'Microsoft.AppConf
       id: 'Contonance.Backend:InjectRateLimitingFaults'
       description: 'Inject rate limiting faults on Contonance.Backend for HTTP calls to EnterpriseWarehouse.Backend'
       enabled: false
+      labels: [
+        'Contonance.Backend'
+      ]
     })
     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
   }
