@@ -38,6 +38,7 @@ builder.Configuration.AddAzureAppConfiguration(options =>
         .UseFeatureFlags(options =>
         {
             options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
+            options.Label = "Contonance.Backend";
         });
 });
 
