@@ -7,13 +7,24 @@ using Contonance.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .AddAzureAppConfiguration(options =>
+    {
+        options.Connect(builder.Configuration
+            .GetValue<string>("AppConfiguration:ConnectionString"))
+            .UseFeatureFlags(options =>
+            {
+                options.Select("*");
+                options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
+            });
+    });
 
 builder.Services.AddControllers(options =>
 {
     options.RespectBrowserAcceptHeader = true;
 });
-
 
 builder.Services.AddLogging(config =>
 {
@@ -31,15 +42,6 @@ builder.Services.AddAzureClients(b =>
 
 builder.Services.AddSingleton<RepairReportsRepository, RepairReportsRepository>();
 builder.Services.AddSingleton<EnterpriseWarehouseClient, EnterpriseWarehouseClient>();
-
-builder.Configuration.AddAzureAppConfiguration(options =>
-{
-    options.Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
-        .UseFeatureFlags(options =>
-        {
-            options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
-        });
-});
 
 builder.Services.AddAzureAppConfiguration();
 builder.Services

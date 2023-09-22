@@ -36,7 +36,7 @@ namespace Contonance.Backend.Clients
 
             var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
                 with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                    .InjectionRate(0.5)
+                    .InjectionRate(1)
                     .Enabled()
                 );
 
