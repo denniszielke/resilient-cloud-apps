@@ -4,6 +4,7 @@ using System.Net;
 using Polly.Contrib.Simmy;
 using Polly.Contrib.Simmy.Outcomes;
 using Contonance.Extensions;
+using Microsoft.FeatureManagement;
 
 namespace Contonance.Backend.Clients
 {
@@ -46,12 +47,26 @@ namespace Contonance.Backend.Clients
                 var context = new Context().WithLogger(logger);
                 request.SetPolicyExecutionContext(context);
 
+
+                var testBackendSetting = configuration.GetValue<bool>("featureManagement:Contonance.Backend:InjectRateLimitingFaults");
+                var testWebPortalSetting = configuration.GetValue<bool>("featureManagement:Contonance.WebPortal.Server:EnableCircuitBreakerPolicy");
+
+                var featureManager = services.GetService<IFeatureManager>();
+                var testFFs = featureManager.GetFeatureNamesAsync().ToBlockingEnumerable().ToList();
+                var testBackendSetting2 = featureManager.IsEnabledAsync("Contonance.Backend:InjectRateLimitingFaults").Result;
+                var testWebPortalSetting2 = featureManager.IsEnabledAsync("Contonance.WebPortal.Server:EnableCircuitBreakerPolicy").Result;
+
+                var configurationNew = services.GetService<IConfiguration>();
+                var testBackendSetting3 = configurationNew.GetValue<bool>("featureManagement:Contonance.Backend:InjectRateLimitingFaults");
+                var testWebPortalSetting3 = configurationNew.GetValue<bool>("featureManagement:Contonance.WebPortal.Server:EnableCircuitBreakerPolicy");
+
+
                 // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
                 var policies = new List<IAsyncPolicy<HttpResponseMessage>>
                 {
                     retryPolicy
                 };
-                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}:InjectRateLimitingFaults", injectRateLimitingFaultsPolicy);
+                policies.AddForFeatureFlag(configuration, $"{FEATURE_FLAG_PREFIX}/InjectRateLimitingFaults", injectRateLimitingFaultsPolicy);
 
                 return policies.Wrap();
             }
