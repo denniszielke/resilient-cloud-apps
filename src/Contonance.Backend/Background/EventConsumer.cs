@@ -5,6 +5,7 @@ using Azure.Storage.Blobs;
 using Contonance.Backend.Clients;
 using Contonance.Backend.Repositories;
 using Contonance.Shared;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +15,7 @@ namespace Contonance.Backend.Background
     public class EventConsumer : IHostedService
     {
         private readonly IConfiguration _configuration;
+        private readonly IConfigurationRefresher _refresher;
         private readonly RepairReportsRepository _repairReportsRepository;
         private readonly BlobServiceClient _blobServiceClient;
         private readonly EnterpriseWarehouseClient _enterpriseWarehouseClient;
@@ -25,12 +27,14 @@ namespace Contonance.Backend.Background
         private ConcurrentDictionary<string, int> _partitionEventCount = new ConcurrentDictionary<string, int>();
 
         public EventConsumer(IConfiguration configuration,
+                             IConfigurationRefresher refresher,
                              RepairReportsRepository repairReportsRepository,
                              BlobServiceClient blobServiceClient,
                              EnterpriseWarehouseClient enterpriseWarehouseClient,
                              ILogger<EventConsumer> logger)
         {
             _configuration = configuration;
+            _refresher = refresher;
             _repairReportsRepository = repairReportsRepository;
             _blobServiceClient = blobServiceClient;
             _enterpriseWarehouseClient = enterpriseWarehouseClient;
@@ -73,6 +77,8 @@ namespace Contonance.Backend.Background
                 {
                     return;
                 }
+
+                await _refresher.RefreshAsync();
 
                 _logger.LogTrace($"received message {arg.Data.MessageId}");
                 var data = Encoding.UTF8.GetString(arg.Data.Body.ToArray());

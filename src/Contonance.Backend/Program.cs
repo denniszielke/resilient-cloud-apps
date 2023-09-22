@@ -5,23 +5,26 @@ using Contonance.Backend.Clients;
 using Contonance.Backend.Repositories;
 using Contonance.Extensions;
 using Microsoft.FeatureManagement;
-using Polly.Extensions.Http;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+IConfigurationRefresher configurationRefresher = null;
 builder.Configuration
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
     .AddAzureAppConfiguration(options =>
     {
-        options.Connect(builder.Configuration
-            .GetValue<string>("AppConfiguration:ConnectionString"))
+        options
+            .Connect(builder.Configuration.GetValue<string>("AppConfiguration:ConnectionString"))
             .UseFeatureFlags(options =>
             {
-                options.Select("Contonance.Backend:*");
                 options.CacheExpirationInterval = TimeSpan.FromSeconds(2);
             });
+
+        configurationRefresher = options.GetRefresher();
     });
+builder.Services.AddSingleton(configurationRefresher!);
 
 builder.Services.AddControllers(options =>
 {
@@ -49,46 +52,13 @@ builder.Services.AddAzureAppConfiguration();
 builder.Services.AddFeatureManagement();
 builder.Services
     .AddHttpClient<EnterpriseWarehouseClient>()
-    // .AddPolicyConfiguration(EnterpriseWarehouseClient.SelectPolicy, builder.Configuration);
-    .AddPolicyHandler((services, request) =>
-            {
-                var testBackendSetting = builder.Configuration.GetValue<bool>("featureManagement:Contonance.Backend:InjectRateLimitingFaults");
-                var testWebPortalSetting = builder.Configuration.GetValue<bool>("featureManagement:Contonance.WebPortal.Server:EnableCircuitBreakerPolicy");
-
-                var featureManager = services.GetService<IFeatureManager>();
-                var testFFs = featureManager.GetFeatureNamesAsync().ToBlockingEnumerable().ToList();
-                var testBackendSetting2 = featureManager.IsEnabledAsync("Contonance.Backend:InjectRateLimitingFaults").Result;
-                var testWebPortalSetting2 = featureManager.IsEnabledAsync("Contonance.WebPortal.Server:EnableCircuitBreakerPolicy").Result;
-
-                var retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryWithLoggingAsync(new[]
-                {
-                    TimeSpan.FromSeconds(0.5),
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(5)
-                })
-                .WithPolicyKey($"{nameof(EnterpriseWarehouseClient)}RetryPolicy");
-                return retryPolicy;
-            }
-            );
+    .AddPolicyConfiguration(EnterpriseWarehouseClient.SelectPolicy, builder.Configuration);
 
 builder.Services.AddHostedService<EventConsumer>();
 
 var app = builder.Build();
 
 app.UseAzureAppConfiguration();
-
-var test = builder.Configuration.GetDebugView();
-var testFeatures = builder.Configuration.GetSection("featureManagement").Exists();
-var testBackendSetting = builder.Configuration.GetValue<bool>("featureManagement:Contonance.Backend:InjectRateLimitingFaults");
-var testWebPortalSetting = builder.Configuration.GetValue<bool>("featureManagement:Contonance.WebPortal.Server:EnableCircuitBreakerPolicy");
-
-
-var featureManager = app.Services.GetService<IFeatureManager>();
-var testFFs = featureManager.GetFeatureNamesAsync().ToBlockingEnumerable().ToList();
-var testBackendSetting2 = featureManager.IsEnabledAsync("Contonance.Backend:InjectRateLimitingFaults").Result;
-var testWebPortalSetting2 = featureManager.IsEnabledAsync("Contonance.WebPortal.Server:EnableCircuitBreakerPolicy").Result;
 
 app.MapControllers();
 
