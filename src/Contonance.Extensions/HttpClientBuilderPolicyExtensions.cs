@@ -54,7 +54,7 @@ public static class HttpClientBuilderPolicyExtensions
                 sleepDurationProvider: (retryCount, response, context) =>
                 {
                     var serverWaitDuration = TimeSpan.MinValue;
-                    if (response.Result.Headers.TryGetValues("Retry-After", out var values) &&
+                    if ((response.Result?.Headers.TryGetValues("Retry-After", out var values) ?? false) &&
                         (values.FirstOrDefault() is string retryAfterValue) &&
                         int.TryParse(retryAfterValue, CultureInfo.InvariantCulture, out int retryAfterSeconds))
                     {
