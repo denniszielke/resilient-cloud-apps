@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
+using System.Globalization;
 
 namespace Contonance.Extensions;
 
@@ -52,9 +53,9 @@ public static class HttpClientBuilderPolicyExtensions
                 retryCount: clientSleepDurations.Count,
                 sleepDurationProvider: (retryCount, response, context) =>
                 {
-                    var serverWaitDuration = 0;
-                    if (response.Result?.Headers.TryGetValues("Retry-After", out var values) &&
-                        values.FirstOrDefault() is string retryAfterValue &&
+                    var serverWaitDuration = TimeSpan.MinValue;
+                    if (response.Result.Headers.TryGetValues("Retry-After", out var values) &&
+                        (values.FirstOrDefault() is string retryAfterValue) &&
                         int.TryParse(retryAfterValue, CultureInfo.InvariantCulture, out int retryAfterSeconds))
                     {
                         serverWaitDuration = TimeSpan.FromSeconds(retryAfterSeconds);
@@ -62,10 +63,11 @@ public static class HttpClientBuilderPolicyExtensions
                     var waitDuration = Math.Max(clientSleepDurations[retryCount - 1].TotalMilliseconds, serverWaitDuration.TotalMilliseconds);
                     return TimeSpan.FromMilliseconds(waitDuration);
                 },
-                onRetry: (outcome, timespan, retryAttempt, context) =>
+                onRetryAsync: (outcome, timespan, retryAttempt, context) =>
                     {
                         var requestContext = outcome.Result.RequestMessage.GetPolicyExecutionContext();
                         requestContext.GetLogger()?.LogWarning($"Retry attempt {retryAttempt} with {timespan.TotalMilliseconds}ms delay of {context.PolicyKey}, due to: {{StatusCode: {(int)outcome.Result.StatusCode}, ReasonPhrase: '{outcome.Result.ReasonPhrase}'}}");
+                        return Task.CompletedTask;
                     });
     }
 }
