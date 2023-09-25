@@ -32,9 +32,9 @@ public class ContonanceBackendClient
             .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             .WaitAndRetryWithLoggingAsync(new[]
             {
-                TimeSpan.FromSeconds(0.5),
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(5)
+                TimeSpan.FromSeconds(1.5),
+                TimeSpan.FromSeconds(3),
+                TimeSpan.FromSeconds(8)
             })
             .WithPolicyKey($"{nameof(ContonanceBackendClient)}RetryPolicy");
 
@@ -49,7 +49,7 @@ public class ContonanceBackendClient
 
         var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
             with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                .InjectionRate(0.5)
+                .InjectionRate(0.75)
                 .Enabled()
             );
 
