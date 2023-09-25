@@ -2,6 +2,8 @@
 @using Contonance.WebPortal.Shared
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient Http
+@inject AppInsightsInterop AppInsightsInterop
+@inject IApplicationInsights ApplicationInsights
 
 <PageTitle>Knowledge Base</PageTitle>
 
@@ -26,6 +28,11 @@
         </div>
     </div>
 </EditForm>
+
+@if (ErrorMessage != null)
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
 
 @if (isSubmitting)
 {
@@ -56,17 +63,24 @@
 @code {
     string question = "";
 
-    KnowledgeBaseResponse _kbResponse;
+    KnowledgeBaseResponse? _kbResponse;
 
     private InputText? inputTextForFocus;
 
     private bool isSubmitting;
     private bool isError;
 
+    private string? ErrorMessage;
+
     private readonly string sample1 = "What are recommended motors for Gypsy?";
 
     private readonly string sample2 = "What do I need to screwfasten the keel to the stem notch of Breeze Baby?";
 
+    protected override async Task OnInitializedAsync()
+    {
+        await AppInsightsInterop.SetNewTraceIdAsync();
+        await ApplicationInsights.TrackPageView();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -102,13 +116,22 @@
     private async Task AskKBBackend()
     {
         _kbResponse = null;
+        var traceId = await AppInsightsInterop.GetCurrentTraceIdAsync();
         var response = await Http.PostAsJsonAsync("KnowledgeBase", question);
-        var kbResponse = await response.Content.ReadFromJsonAsync<KnowledgeBaseResponse>();
-        foreach(var citation in kbResponse.Citations)
+        if (response.IsSuccessStatusCode)
         {
-            kbResponse.Answer = kbResponse.Answer.Replace($"[doc{citation.Id}]", $"<a href=\"{citation.Url}\" target=\"_blank\">[{citation.Id}]</a>");
+            var kbResponse = await response.Content.ReadFromJsonAsync<KnowledgeBaseResponse>();
+            foreach(var citation in kbResponse!.Citations)
+            {
+                kbResponse.Answer = kbResponse.Answer.Replace($"[doc{citation.Id}]", $"<a href=\"{citation.Url}\" target=\"_blank\">[{citation.Id}]</a>");
+            }
+            _kbResponse = kbResponse;
         }
-        _kbResponse = kbResponse;
+        else
+        {
+            ErrorMessage = $"Sorry, something went wrong. Please contact support with: {traceId}";
+        }
+        
         question = "";
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Azure;
 using Azure;
 using Contonance.Extensions;
 using Contonance.WebPortal.Server.Clients;
+using Contonance.WebPortal.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 

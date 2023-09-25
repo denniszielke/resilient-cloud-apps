@@ -37,13 +37,13 @@ namespace Contonance.Backend.Clients
 
             var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
                 with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                    .InjectionRate(1)
+                    .InjectionRate(0.7)
                     .Enabled()
                 );
 
             builder.AddPolicyHandler((services, request) =>
             {
-                var logger = services.GetService<ILogger<EnterpriseWarehouseClient>>();
+                var logger = services.GetService<ILogger<EnterpriseWarehouseClient>>()!;
                 request
                     .GetPolicyExecutionContext()
                     .WithLogger(logger);
