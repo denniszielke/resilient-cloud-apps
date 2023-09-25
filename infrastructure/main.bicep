@@ -100,22 +100,6 @@ module acaenv 'acaenv.bicep' = {
   }
 }
 
-module acacreator 'acacreator.bicep' = {
-  name: 'acacreator'
-  scope: rg
-  params: {
-    containerAppEnvId: acaenv.outputs.containerAppEnvId
-    location: location
-    appInsightsName: logging.outputs.appInsightsName
-    eventHubName: eventhub.outputs.eventHubName
-    eventHubNamespaceName: eventhub.outputs.eventHubNamespaceName
-    eventHubAuthRuleName: eventhub.outputs.authRuleName
-    registryOwner: registryOwner
-    imageTag: imageTag
-    appConfigurationName: appconfig.outputs.appConfigurationName
-  }
-}
-
 module acareceiver 'acacontonancebackend.bicep' = {
   name: 'acacontonancebackend'
   scope: rg
