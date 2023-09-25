@@ -8,7 +8,7 @@ Take a look how we use **Azure App Configuration** to toggle various resilience 
 We will also show you how you can use **Azure Monitor with Application Insights** to compare and understand the availability impact of your patterns.
 
 High Level Architecture:
-![](/architecture.png)
+![](/architecture.drawio.svg)
 
 
 ## Deploy Azure resources
