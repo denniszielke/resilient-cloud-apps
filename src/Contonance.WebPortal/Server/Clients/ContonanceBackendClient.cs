@@ -48,14 +48,14 @@ public class ContonanceBackendClient
             );
 
         var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
-            with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                .InjectionRate(0.5)
+            with.ResultAndLog(new HttpResponseMessage(HttpStatusCode.TooManyRequests), LogLevel.Error)
+                .InjectionRate(0.7)
                 .Enabled()
             );
 
         var injectLatencyFaultsPolicy = MonkeyPolicy.InjectLatencyAsync<HttpResponseMessage>(with =>
             with.Latency(TimeSpan.FromSeconds(10))
-                .InjectionRate(0.5)
+                .InjectionRate(0.7)
                 .Enabled()
             );
 
@@ -63,7 +63,7 @@ public class ContonanceBackendClient
 
         builder.AddPolicyHandler((services, request) =>
             {
-                var logger = services.GetService<ILogger<ContonanceBackendClient>>();
+                var logger = services.GetService<ILogger<ContonanceBackendClient>>()!;
                 request
                     .GetPolicyExecutionContext()
                     .WithLogger(logger);

@@ -52,6 +52,19 @@
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="_content/BlazorApplicationInsights/JsInterop.js"></script>
     <script>
+        window.blazorApplicationInsights.setNewTraceId = function () {
+            if (appInsights.context !== undefined) {
+                var newId = Microsoft.ApplicationInsights.Telemetry.Util.generateW3CId();
+                appInsights.context.telemetryTrace.traceID = newId;
+                return newId;
+            }
+        };
+        window.blazorApplicationInsights.getCurrentTraceId = function () {
+            if (appInsights.context !== undefined) {
+                return appInsights.context.telemetryTrace.traceID;
+            }
+        };
+
         window.addOnlineStatusListener = function (dotNetRef) {
             function updateDotNet() {
                 dotNetRef.invokeMethodAsync('UpdateStatus', navigator.onLine);

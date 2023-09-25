@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfigurationRefresher configurationRefresher = null;
+IConfigurationRefresher? configurationRefresher = null;
 builder.Configuration
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()

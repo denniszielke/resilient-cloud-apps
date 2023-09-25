@@ -48,7 +48,6 @@ public static class HttpClientBuilderPolicyExtensions
         this PolicyBuilder<HttpResponseMessage> policyBuilder,
         IList<TimeSpan> clientSleepDurations)
     {
-        Console.WriteLine("WaitAndRetryWithLoggingAsync");
         return policyBuilder
             .WaitAndRetryAsync(
                 retryCount: clientSleepDurations.Count,

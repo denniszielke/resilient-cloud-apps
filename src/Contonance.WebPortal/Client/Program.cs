@@ -9,6 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<OnlineStatusInterop>();
+builder.Services.AddScoped<AppInsightsInterop>();
 
 builder.Services.AddBlazorApplicationInsights(async applicationInsights =>
     {
@@ -19,8 +20,7 @@ builder.Services.AddBlazorApplicationInsights(async applicationInsights =>
                 { "ai.cloud.role", "Contonance.WebPortal.Client" },
             }
         };
-
         await applicationInsights.AddTelemetryInitializer(telemetryItem);
-    });
+    }, addILoggerProvider: true, enableAutoRouteTracking: false);
 
 await builder.Build().RunAsync();
