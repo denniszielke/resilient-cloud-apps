@@ -77,6 +77,12 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("index.html", new StaticFileOptions()
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Cookies.Append("ai_connString", app.Configuration["ApplicationInsights:ConnectionString"]!);
+    }
+});
 
 app.Run();

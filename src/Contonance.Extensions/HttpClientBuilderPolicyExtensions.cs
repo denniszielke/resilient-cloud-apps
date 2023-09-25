@@ -48,6 +48,7 @@ public static class HttpClientBuilderPolicyExtensions
         this PolicyBuilder<HttpResponseMessage> policyBuilder,
         IList<TimeSpan> clientSleepDurations)
     {
+        Console.WriteLine("WaitAndRetryWithLoggingAsync");
         return policyBuilder
             .WaitAndRetryAsync(
                 retryCount: clientSleepDurations.Count,
@@ -65,8 +66,7 @@ public static class HttpClientBuilderPolicyExtensions
                 },
                 onRetryAsync: (outcome, timespan, retryAttempt, context) =>
                     {
-                        var requestContext = outcome.Result.RequestMessage.GetPolicyExecutionContext();
-                        requestContext.GetLogger()?.LogWarning($"Retry attempt {retryAttempt} with {timespan.TotalMilliseconds}ms delay of {context.PolicyKey}, due to: {{StatusCode: {(int)outcome.Result.StatusCode}, ReasonPhrase: '{outcome.Result.ReasonPhrase}'}}");
+                        context.GetLogger()?.LogWarning($"Retry attempt {retryAttempt} with {timespan.TotalMilliseconds}ms delay of {context.PolicyKey}, due to: {{StatusCode: {(int)outcome.Result.StatusCode}, ReasonPhrase: '{outcome.Result.ReasonPhrase}'}}");
                         return Task.CompletedTask;
                     });
     }

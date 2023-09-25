@@ -37,15 +37,16 @@ namespace Contonance.Backend.Clients
 
             var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
                 with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                    .InjectionRate(0.5)
+                    .InjectionRate(1)
                     .Enabled()
                 );
 
             builder.AddPolicyHandler((services, request) =>
             {
                 var logger = services.GetService<ILogger<EnterpriseWarehouseClient>>();
-                var context = new Context().WithLogger(logger);
-                request.SetPolicyExecutionContext(context);
+                request
+                    .GetPolicyExecutionContext()
+                    .WithLogger(logger);
 
                 // Note: recommended way of ordering policies: https://github.com/App-vNext/Polly/wiki/PolicyWrap#ordering-the-available-policy-types-in-a-wrap
                 var policies = new List<IAsyncPolicy<HttpResponseMessage>>
