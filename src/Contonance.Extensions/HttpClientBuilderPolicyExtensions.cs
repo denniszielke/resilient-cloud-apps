@@ -45,13 +45,27 @@ public static class HttpClientBuilderPolicyExtensions
 
     public static AsyncRetryPolicy<HttpResponseMessage> WaitAndRetryWithLoggingAsync(
         this PolicyBuilder<HttpResponseMessage> policyBuilder,
-        IEnumerable<TimeSpan> sleepDurations)
+        IList<TimeSpan> clientSleepDurations)
     {
-        return policyBuilder.WaitAndRetryAsync(sleepDurations,
-            onRetry: (outcome, timespan, retryAttempt, context) =>
+        return policyBuilder
+            .WaitAndRetryAsync(
+                retryCount: clientSleepDurations.Count,
+                sleepDurationProvider: (retryCount, response, context) =>
                 {
-                    var requestContext = outcome.Result.RequestMessage.GetPolicyExecutionContext();
-                    requestContext.GetLogger()?.LogWarning($"Retry attempt {retryAttempt} with {timespan.TotalMilliseconds}ms delay of {context.PolicyKey}, due to: {{StatusCode: {(int)outcome.Result.StatusCode}, ReasonPhrase: '{outcome.Result.ReasonPhrase}'}}");
-                });
+                    var serverWaitDuration = 0;
+                    if (response.Result?.Headers.TryGetValues("Retry-After", out var values) &&
+                        values.FirstOrDefault() is string retryAfterValue &&
+                        int.TryParse(retryAfterValue, CultureInfo.InvariantCulture, out int retryAfterSeconds))
+                    {
+                        serverWaitDuration = TimeSpan.FromSeconds(retryAfterSeconds);
+                    }
+                    var waitDuration = Math.Max(clientSleepDurations[retryCount - 1].TotalMilliseconds, serverWaitDuration.TotalMilliseconds);
+                    return TimeSpan.FromMilliseconds(waitDuration);
+                },
+                onRetry: (outcome, timespan, retryAttempt, context) =>
+                    {
+                        var requestContext = outcome.Result.RequestMessage.GetPolicyExecutionContext();
+                        requestContext.GetLogger()?.LogWarning($"Retry attempt {retryAttempt} with {timespan.TotalMilliseconds}ms delay of {context.PolicyKey}, due to: {{StatusCode: {(int)outcome.Result.StatusCode}, ReasonPhrase: '{outcome.Result.ReasonPhrase}'}}");
+                    });
     }
 }

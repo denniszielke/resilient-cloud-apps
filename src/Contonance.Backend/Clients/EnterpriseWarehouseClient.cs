@@ -26,6 +26,7 @@ namespace Contonance.Backend.Clients
         {
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                 .WaitAndRetryWithLoggingAsync(new[]
                 {
                     TimeSpan.FromSeconds(0.5),
@@ -36,7 +37,7 @@ namespace Contonance.Backend.Clients
 
             var injectRateLimitingFaultsPolicy = MonkeyPolicy.InjectResultAsync<HttpResponseMessage>(with =>
                 with.Result(new HttpResponseMessage(HttpStatusCode.TooManyRequests))
-                    .InjectionRate(1)
+                    .InjectionRate(0.5)
                     .Enabled()
                 );
 

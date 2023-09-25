@@ -29,6 +29,7 @@ public class ContonanceBackendClient
     {
         var retryPolicy = HttpPolicyExtensions
             .HandleTransientHttpError()
+            .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             .WaitAndRetryWithLoggingAsync(new[]
             {
                 TimeSpan.FromSeconds(0.5),
