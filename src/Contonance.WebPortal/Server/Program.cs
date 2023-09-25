@@ -4,6 +4,7 @@ using Azure;
 using Contonance.Extensions;
 using Contonance.WebPortal.Server.Clients;
 using Contonance.WebPortal.Client;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,10 @@ builder.Services.AddLogging(config =>
     config.AddDebug();
     config.AddConsole();
 });
-builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.DeveloperMode = true; // Only for demo purposes, do not use in production!
+});
 builder.Services.AddSingleton<ITelemetryInitializer>(_ => new CloudRoleNameTelemetryInitializer("Contonance.WebPortal.Server"));
 
 

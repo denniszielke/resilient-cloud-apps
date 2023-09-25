@@ -37,7 +37,10 @@ builder.Services.AddLogging(config =>
     config.AddConsole();
 });
 
-builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.DeveloperMode = true; // Only for demo purposes, do not use in production!
+});
 builder.Services.AddSingleton<ITelemetryInitializer>(_ => new CloudRoleNameTelemetryInitializer("Contonance.Backend"));
 
 builder.Services.AddAzureClients(b =>

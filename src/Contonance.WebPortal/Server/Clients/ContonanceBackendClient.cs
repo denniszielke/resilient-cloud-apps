@@ -32,9 +32,9 @@ public class ContonanceBackendClient
             .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             .WaitAndRetryWithLoggingAsync(new[]
             {
-                TimeSpan.FromSeconds(1.5),
-                TimeSpan.FromSeconds(3),
-                TimeSpan.FromSeconds(8)
+                TimeSpan.FromSeconds(0.5),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(5)
             })
             .WithPolicyKey($"{nameof(ContonanceBackendClient)}RetryPolicy");
 

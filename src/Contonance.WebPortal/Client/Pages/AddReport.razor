@@ -111,7 +111,7 @@ else
         var response = await Http.PostAsJsonAsync("RepairReports", Report);
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo($"reportsubmitted");
+            NavigationManager.NavigateTo($"reportsubmitted/{traceId}");
         }
         else
         {

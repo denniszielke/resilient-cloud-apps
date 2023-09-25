@@ -1,4 +1,4 @@
-﻿@page "/reportsubmitted"
+﻿@page "/reportsubmitted/{TraceID}"
 
 <PageTitle>Report Submitted</PageTitle>
 
@@ -9,3 +9,8 @@
         Report was submitted and will now be processed
     </div>
 </div>
+
+@code {
+    [Parameter]
+    public string TraceID { get; set; }
+}
