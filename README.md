@@ -59,11 +59,16 @@ bash ./create-config.sh $PROJECT_NAME
 ## Walkthrough
 
 1. Open the *Contonance WebPortal*, show all three pages, recognize that **everything executes without errors**
-2. Show source code of [WebPortal.Server Program.cs L23](src/Contonance.WebPortal/Server/Program.cs#L23), explain how `AddAzureAppConfiguration` uses **settings push model** and no restarts are required
-3. Show source code of [WebPortal.Server ContonanceBackendClient.cs L28](src/Contonance.WebPortal/Server/Clients/ContonanceBackendClient.cs#L28), explain **configuration of the patterns** `Retry` and `CircuitBreaker` and the **order** of them in the pipeline of `HttpClient`
-4. Open *Azure App Configuration Feature manager* UI, enable `Contonance.WebPortal.Server:InjectRateLimitingFaults`
-5. Show *Contonance WebPortal Repair Tasks* and how it **crashes**
-6. Open *Azure App Configuration Feature manager* UI, enable `Contonance.WebPortal.Server:EnableRetryPolicy`
-7. Show *Contonance WebPortal Repair Tasks* and try until it **crashes**, explain added **retry latency** and shown **Correlation ID**
-8. Show source code of [WebPortal.Server ContonanceBackendClient.cs L50](src/Contonance.WebPortal/Server/Clients/ContonanceBackendClient.cs#L50) and explain the **injection machanisms**
-9. Show *Azure Application Insights Transaction search*, show **end-to-end transaction details** and how the `Retry` and `InjectResult` is visible
+2. Show the [architecture diagram](architecture.drawio.svg)
+3. Show *Azure Application Insights Application Map*
+   ![Application Map](img/application_map.png)
+4. Show source code of [WebPortal.Server Program.cs L23](src/Contonance.WebPortal/Server/Program.cs#L23), explain how `AddAzureAppConfiguration` uses **settings push model** and no restarts are required
+5. Show source code of [WebPortal.Server ContonanceBackendClient.cs L28](src/Contonance.WebPortal/Server/Clients/ContonanceBackendClient.cs#L28), explain **configuration of the patterns** `Retry` and `CircuitBreaker` and the **order** of them in the pipeline of `HttpClient`
+6. Open *Azure App Configuration Feature manager* UI, enable `Contonance.WebPortal.Server:InjectRateLimitingFaults`
+7. Show *Contonance WebPortal Repair Tasks* and how it **crashes**
+8. Open *Azure App Configuration Feature manager* UI, enable `Contonance.WebPortal.Server:EnableRetryPolicy`
+   ![Feature Flags](img/feature_flags.png)
+9. Show *Contonance WebPortal Repair Tasks* and try until it **crashes**, explain added **retry latency** and shown **Correlation ID**
+10. Show source code of [WebPortal.Server ContonanceBackendClient.cs L50](src/Contonance.WebPortal/Server/Clients/ContonanceBackendClient.cs#L50) and explain the **injection machanisms**
+11. Show *Azure Application Insights Transaction search*, show **end-to-end transaction details** and how the `Retry` and `InjectResult` is visible
+    ![End-to-end transaction details](img/end2end_transaction.png)
