@@ -1,7 +1,9 @@
 # Building resilient applications in Azure
 
 Chaos engineering, fault injection testing, resiliency patterns, designing for failure - so many design principles and topics and still is reliability often times an afterthought.  
-Let us run together a "game day" for resilience validation of our sample Azure application: **Contonance - Awesome Ship Maintenance, a subsidary of Contoso Group**.  
+Let us run together a "game day" for resilience validation of our sample Azure application: **Contonance - Awesome Ship Maintenance, a subsidary of Contoso Group**.
+
+![Sample UI](img/sample_ui.png)
 
 Take a look how we use **Azure App Configuration** to toggle various resilience scenarios, and how we measure, understand, and improve resilience against real-world incidents using **resiliency patterns and fault injections in code**.
 We will also show you how you can use **Azure Monitor with Application Insights** to compare and understand the availability impact of your patterns.
