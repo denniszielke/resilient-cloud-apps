@@ -1,0 +1,137 @@
+﻿@page "/knowledgebase"
+@using Contonance.WebPortal.Shared
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject AppInsightsInterop AppInsightsInterop
+@inject IApplicationInsights ApplicationInsights
+
+<PageTitle>Knowledge Base</PageTitle>
+
+<h1>Knowledge Base</h1>
+
+<EditForm Model="question" OnSubmit="Ask">
+    <div class="row mb-3">
+        <div class="col">
+            <InputText @bind-Value="question" @ref=inputTextForFocus class="form-control"
+                placeholder="Please enter your question" disabled=@isSubmitting />
+            @if (isError)
+            {
+                <div class="alert alert-danger">Please enter a question.</div>
+            }
+            <div class="form-text" role="button" @onclick="TrySample1">Sample: <em>@(sample1)</em></div>
+            <div class="form-text" role="button" @onclick="TrySample2">Sample: <em>@(sample2)</em></div>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" type="Submit" disabled=@isSubmitting>
+                Ask KB
+            </button>
+        </div>
+    </div>
+</EditForm>
+
+@if (ErrorMessage != null)
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
+
+@if (isSubmitting)
+{
+    <div class="spinner-grow" role="status">
+    <span class="visually-hidden">Loading...</span>
+</div>
+}
+
+@if (_kbResponse != null)
+{
+    <p><strong>Question:</strong><br/> @_kbResponse.Question</p>
+    <p><strong>Answer:</strong><br /> @((MarkupString)_kbResponse.Answer)</p>
+
+    @if (_kbResponse.Citations != null && _kbResponse.Citations.Any())
+    {
+        <p><strong>References:</strong></p>
+        <ul>
+    @foreach (var reference in _kbResponse.Citations)
+            {
+                <li>
+                    <a href="@reference.Url" id="footnote-@(reference.Id)" target="_blank">[@reference.Id] @reference.Title</a>
+                </li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    string question = "";
+
+    KnowledgeBaseResponse? _kbResponse;
+
+    private InputText? inputTextForFocus;
+
+    private bool isSubmitting;
+    private bool isError;
+
+    private string? ErrorMessage;
+
+    private readonly string sample1 = "What are recommended motors for Gypsy?";
+
+    private readonly string sample2 = "What do I need to screwfasten the keel to the stem notch of Breeze Baby?";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppInsightsInterop.SetNewTraceIdAsync();
+        await ApplicationInsights.TrackPageView();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (inputTextForFocus?.Element != null)
+        {
+            await inputTextForFocus.Element.Value.FocusAsync();
+        }
+    }
+
+    private async Task TrySample1()
+    {
+        question = sample1;
+        await Ask(null);
+    }
+
+    private async Task TrySample2()
+    {
+        question = sample2;
+        await Ask(null);
+    }
+
+    private async Task Ask(EditContext? editContext)
+    {
+        isSubmitting = true;
+        isError = string.IsNullOrWhiteSpace(question);
+        if (!isError)
+        {
+            await AskKBBackend();
+        }
+        isSubmitting = false;
+    }
+
+    private async Task AskKBBackend()
+    {
+        _kbResponse = null;
+        var traceId = await AppInsightsInterop.GetCurrentTraceIdAsync();
+        var response = await Http.PostAsJsonAsync("KnowledgeBase", question);
+        if (response.IsSuccessStatusCode)
+        {
+            var kbResponse = await response.Content.ReadFromJsonAsync<KnowledgeBaseResponse>();
+            foreach(var citation in kbResponse!.Citations)
+            {
+                kbResponse.Answer = kbResponse.Answer.Replace($"[doc{citation.Id}]", $"<a href=\"{citation.Url}\" target=\"_blank\">[{citation.Id}]</a>");
+            }
+            _kbResponse = kbResponse;
+        }
+        else
+        {
+            ErrorMessage = $"Sorry, something went wrong. Please contact support with: {traceId}";
+        }
+        
+        question = "";
+    }
+}

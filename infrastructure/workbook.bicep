@@ -1,14 +1,14 @@
 @description('The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group.')
-param workbookDisplayName string = 'reliable-apps'
+param workbookDisplayName string
 
 @description('The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is \'workbook\'')
 param workbookType string = 'workbook'
 
 @description('The id of resource instance to which the workbook will be associated')
-param workbookSourceId string = '/subscriptions/73119864-58f7-4cb3-b1e5-98300bcc2557/resourceGroups/reliabr2/providers/Microsoft.Insights/components/appi-reliabr2'
+param workbookSourceId string
 
 @description('The unique guid for this workbook instance')
-param workbookId string = newGuid()
+param workbookId string
 
 @description('Location for the workbook.')
 param location string = resourceGroup().location

@@ -1,0 +1,126 @@
+﻿@page "/addreport"
+@using Contonance.Shared;
+@using Contonance.WebPortal.Shared
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<AddReport> Logger
+@implements IDisposable
+@inject AppInsightsInterop AppInsightsInterop
+@inject IApplicationInsights ApplicationInsights
+
+<PageTitle>Add Report</PageTitle>
+
+<h1>Add Report</h1>
+
+@if (ErrorMessage != null)
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
+else
+{
+
+
+
+    <EditForm EditContext=editContext OnValidSubmit=AddReportToBackend>
+    @if (isError)
+        {
+            <div class="alert alert-danger">Please fix any validation errors before adding a new repair report.</div>
+        }
+
+        <div class="mb-3">
+            <label for="inputTitle" class="form-label">Title*</label>
+            <InputText @bind-Value="Report!.Title" @ref=inputTextForFocus class="form-control" id="inputTitle" />
+            <ValidationMessage For="@(() => Report.Title)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="inputSeverity" class="form-label">Severity*</label>
+            <InputSelect @bind-Value="Report.Severity" class="form-select" id="inputSeverity"
+                aria-describedby="severityHelp">
+                @foreach (var severity in Enum.GetValues(typeof(Severity)))
+                {
+                    <option value="@severity">@severity</option>
+                }
+            </InputSelect>
+            <div id="severityHelp" class="form-text">Only high risk issues should be marked as <strong>High</strong>.</div>
+            <ValidationMessage For="@(() => Report.Severity)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="inputDueDate" class="form-label">Due Date*</label>
+            <InputDate @bind-Value="Report.DueDate" class="form-control" id="inputDueDate" aria-describedby="dueDateHelp" />
+            <ValidationMessage For="@(() => Report.DueDate)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="inputDetails" class="form-label">Details</label>
+            <InputTextArea @bind-Value="Report.Details" class="form-control" id="inputDetails" />
+            <ValidationMessage For="@(() => Report.Details)" />
+        </div>
+
+        <button class="btn btn-primary" type="Submit" disabled=@isError>
+            Add
+        </button>
+
+        <DataAnnotationsValidator />
+    </EditForm>
+}
+
+@code {
+    private RepairReport? Report;
+    private bool isError = false;
+    private EditContext? editContext;
+    private InputText? inputTextForFocus;
+
+    private string? ErrorMessage;
+
+    protected override void OnInitialized()
+    {
+        Report = new RepairReport { DueDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7)) };
+
+        editContext = new(Report);
+        editContext.OnFieldChanged += HandleFieldChanged!;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppInsightsInterop.SetNewTraceIdAsync();
+        await ApplicationInsights.TrackPageView();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (inputTextForFocus?.Element != null)
+        {
+            await inputTextForFocus.Element.Value.FocusAsync();
+        }
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        isError = !editContext!.Validate();
+        StateHasChanged();
+    }
+
+    async Task AddReportToBackend()
+    {
+        ErrorMessage = null;
+
+        var traceId = await AppInsightsInterop.GetCurrentTraceIdAsync();
+        var response = await Http.PostAsJsonAsync("RepairReports", Report);
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"reportsubmitted/{traceId}");
+        }
+        else
+        {
+            ErrorMessage = $"Sorry, something went wrong. Please contact support with: {traceId}";
+        }
+    }
+
+    public void Dispose()
+    {
+        editContext!.OnFieldChanged -= HandleFieldChanged!;
+    }
+}

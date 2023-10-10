@@ -1,0 +1,16 @@
+﻿@page "/reportsubmitted/{TraceID}"
+
+<PageTitle>Report Submitted</PageTitle>
+
+<h1>Report Submitted</h1>
+
+<div class="text-center">
+    <div class="alert alert-success" role="alert">
+        Report was submitted and will now be processed
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string TraceID { get; set; }
+}

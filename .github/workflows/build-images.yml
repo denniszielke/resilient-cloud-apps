@@ -15,12 +15,13 @@ on:
 
 defaults:
   run:
-    working-directory: src
+    working-directory: src/
 
 env:
   CREATOR_IMAGE_NAME: message-creator
-  RECEIVER_IMAGE_NAME: message-receiver
-  SINK_IMAGE_NAME: message-sink
+  RECEIVER_IMAGE_NAME: contonance-backend
+  SINK_IMAGE_NAME: enterprise-warehouse-backend
+  WEB_PORTAL_IMAGE_NAME: contonance-web-portal
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -38,12 +39,9 @@ jobs:
 
       - name: Build image
         run: |
-          cd Message.Creator
-          docker build . --file Dockerfile --tag $CREATOR_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../Message.Receiver
-          docker build . --file Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-          cd ../Message.Sink
-          docker build . --file Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./Contonance.Backend/Dockerfile --tag $RECEIVER_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./EnterpriseWarehouse.Backend/Dockerfile --tag $SINK_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file ./Contonance.WebPortal/Server/Dockerfile --tag $WEB_PORTAL_IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
         
       - name: Log in to registry
         # This is where you will update the PAT to GITHUB_TOKEN
@@ -51,12 +49,6 @@ jobs:
 
       - name: Push image
         run: |
-          CREATOR_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$CREATOR_IMAGE_NAME
-          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
-          docker tag $CREATOR_IMAGE_NAME $CREATOR_IMAGE_ID:latest
-          docker push $CREATOR_IMAGE_ID:${GITHUB_RUN_ID}
-          docker push $CREATOR_IMAGE_ID:latest
-
           RECEIVER_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$RECEIVER_IMAGE_NAME
           docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:${GITHUB_RUN_ID}
           docker tag $RECEIVER_IMAGE_NAME $RECEIVER_IMAGE_ID:latest
@@ -68,3 +60,9 @@ jobs:
           docker tag $SINK_IMAGE_NAME $SINK_IMAGE_ID:latest
           docker push $SINK_IMAGE_ID:${GITHUB_RUN_ID}
           docker push $SINK_IMAGE_ID:latest
+
+          WEB_PORTAL_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/reliable-apps/$WEB_PORTAL_IMAGE_NAME
+          docker tag $WEB_PORTAL_IMAGE_NAME $WEB_PORTAL_IMAGE_ID:${GITHUB_RUN_ID}
+          docker tag $WEB_PORTAL_IMAGE_NAME $WEB_PORTAL_IMAGE_ID:latest
+          docker push $WEB_PORTAL_IMAGE_ID:${GITHUB_RUN_ID}
+          docker push $WEB_PORTAL_IMAGE_ID:latest

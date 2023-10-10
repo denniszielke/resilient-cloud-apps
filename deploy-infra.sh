@@ -5,6 +5,8 @@ set -e
 # infrastructure deployment properties
 PROJECT_NAME="$1"
 LOCATION="$2"
+REGISTRY_OWNER="$3"
+IMAGE_TAG="$4"
 
 if [ "$PROJECT_NAME" == "" ]; then
 echo "No project name provided - aborting"
@@ -16,6 +18,16 @@ echo "No location provided - aborting"
 exit 0;
 fi
 
+if [ "$REGISTRY_OWNER" == "" ]; then
+echo "No registry owner provided - aborting"
+exit 0;
+fi
+
+if [ "$IMAGE_TAG" == "" ]; then
+echo "No image tag provided - aborting"
+exit 0;
+fi
+
 if [[ $PROJECT_NAME =~ ^[a-z0-9]{5,9}$ ]]; then
     echo "project name $PROJECT_NAME is valid"
 else
@@ -23,21 +35,12 @@ else
     exit 0;
 fi
 
-RESOURCE_GROUP="$PROJECT_NAME"
+RESOURCE_GROUP="$PROJECT_NAME-rg"
 
 AZURE_CORE_ONLY_SHOW_ERRORS="True"
 
-if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
-    echo "creating resource group $RESOURCE_GROUP..."
-    az group create -n $RESOURCE_GROUP -l $LOCATION -o none
-    echo "resource group $RESOURCE_GROUP created"
-else   
-    echo "resource group $RESOURCE_GROUP already exists"
-    LOCATION=$(az group show -n $RESOURCE_GROUP --query location -o tsv)
-fi
-
-az deployment group create -g $RESOURCE_GROUP -f ./infrastructure/main.bicep \
-          -p projectName=$PROJECT_NAME
-
-
-
+az deployment sub create \
+  --name "deploy-infra_for_resilient-cloud-apps" \
+  --location $LOCATION \
+  --template-file ./infrastructure/main.bicep \
+  --parameters projectName=$PROJECT_NAME registryOwner=$REGISTRY_OWNER imageTag=$IMAGE_TAG

@@ -1,0 +1,4 @@
+POST https://localhost:7217/KnowledgeBase HTTP/1.1
+content-type: application/json
+
+"What are recommended motors for Gypsy?"

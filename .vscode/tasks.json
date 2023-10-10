@@ -2,40 +2,50 @@
 // kill -9 $(lsof -t -i:"9092")  
 // lsof -nP -iTCP -sTCP:LISTEN | grep 9093
 // kill -9 $(lsof -t -i:"9093")  
+// fuser -k 7217/tcp
 {
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-creator",
+            "label": "Build All",
+            "dependsOn": [
+                "build-enterprise-warehouse",
+                "build-contonance-backend",
+                "build-contonance-webportal"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build-contonance-webportal",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Message.Creator/Message.Creator.csproj",
+                "${workspaceFolder}/src/Contonance.WebPortal/Server/Contonance.WebPortal.Server.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-receiver",
+            "label": "build-contonance-backend",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-sink",
+            "label": "build-enterprise-warehouse",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Message.Sink/Message.Sink.csproj",
+                "${workspaceFolder}/src/EnterpriseWarehouse.Backend/EnterpriseWarehouse.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -47,8 +57,9 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj",
-                "${workspaceFolder}/src/Message.Sink/Message.Sink.csproj",
+                "${workspaceFolder}/src/Contonance.WebPortal/Server/Contonance.WebPortal.Server.csproj",
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj",
+                "${workspaceFolder}/src/EnterpriseWarehouse.Backend/EnterpriseWarehouse.Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -62,7 +73,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/src/Message.Receiver/Message.Receiver.csproj"
+                "${workspaceFolder}/src/Contonance.Backend/Contonance.Backend.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

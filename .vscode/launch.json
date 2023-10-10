@@ -7,55 +7,46 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": [ "Creator", "Receiver", "Sink"],
+            "configurations": [
+                "EnterpriseWarehouse.Backend",
+                "Contonance.Backend",
+                "Contonance.WebPortal"
+            ],
             "stopAll": true
         }
     ],
     "configurations": [
         {
-            "name": "Creator",
-            "type": "coreclr",
+            "name": "Contonance.WebPortal",
+            "type": "blazorwasm",
             "request": "launch",
-            "preLaunchTask": "build-creator",
-            "program": "${workspaceFolder}/src/Message.Creator/bin/Debug/net6.0/Message.Creator.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Creator",
-            "stopAtEntry": false,
+            "preLaunchTask": "build-contonance-webportal",
+            "cwd": "${workspaceFolder}/src/Contonance.WebPortal/Server",
             "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
-        },       
-        {
-            "name": "Receiver",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-receiver",
-            "program": "${workspaceFolder}/src/Message.Receiver/bin/Debug/net6.0/Message.Receiver.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Receiver",
-            "stopAtEntry": false,
-            "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
+            "url": "https://localhost:7217",
+            "browser": "edge",
         },
         {
-            "name": "Sink",
+            "name": "Contonance.Backend",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-sink",
-            "program": "${workspaceFolder}/src/Message.Sink/bin/Debug/net6.0/Message.Sink.dll",
+            "preLaunchTask": "build-contonance-backend",
+            "program": "${workspaceFolder}/src/Contonance.Backend/bin/Debug/net7.0/Contonance.Backend.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Message.Sink",
+            "cwd": "${workspaceFolder}/src/Contonance.Backend",
             "stopAtEntry": false,
-            "envFile": "${workspaceFolder}/local.env",
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(http?://\\S+)"
-            },
+            "envFile": "${workspaceFolder}/local.env"
+        },
+        {
+            "name": "EnterpriseWarehouse.Backend",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-enterprise-warehouse",
+            "program": "${workspaceFolder}/src/EnterpriseWarehouse.Backend/bin/Debug/net7.0/EnterpriseWarehouse.Backend.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/EnterpriseWarehouse.Backend",
+            "stopAtEntry": false,
+            "envFile": "${workspaceFolder}/local.env"
         },
         {
             "name": ".NET Core Attach",

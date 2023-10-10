@@ -1,4 +1,3 @@
-
 @description('Location for the Cosmos DB account.')
 param location string = resourceGroup().location
 
@@ -14,8 +13,7 @@ param cosmosdbAccountName string
 param cosmosdbDatabaseName string
 
 @description('The container for the database')
-param containerName string = 'data'
-
+param containerName string = 'orders'
 
 resource cosmosDB 'Microsoft.DocumentDB/databaseAccounts@2021-01-15' = {
   name: cosmosdbAccountName
@@ -57,9 +55,9 @@ resource accountName_databaseName_containerName 'Microsoft.DocumentDB/databaseAc
       id: containerName
       partitionKey: {
         paths: [
-          '/id'
+          '/repairPartId'
         ]
-        kind:  'Hash'
+        kind: 'Hash'
       }
       indexingPolicy: {
         indexingMode: 'consistent'
@@ -76,3 +74,5 @@ resource accountName_databaseName_containerName 'Microsoft.DocumentDB/databaseAc
     }
   }
 }
+
+output name string = cosmosDB.name
