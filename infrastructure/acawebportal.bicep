@@ -130,6 +130,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
               name: 'EventHub__EventHubConnectionString'
               value: rule.listKeys().primaryConnectionString
             }
+            {
+              name: 'AzureOpenAiServiceEnabled'
+              value: 'false'
+            }
           ]
           probes: [
             {
