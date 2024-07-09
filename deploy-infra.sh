@@ -43,4 +43,4 @@ az deployment sub create \
   --name "deploy-infra_for_resilient-cloud-apps" \
   --location $LOCATION \
   --template-file ./infrastructure/main.bicep \
-  --parameters projectName=$PROJECT_NAME registryOwner=$REGISTRY_OWNER imageTag=$IMAGE_TAG
+  --parameters projectName=$PROJECT_NAME registryOwner=$REGISTRY_OWNER imageTag=$IMAGE_TAG location=$LOCATION

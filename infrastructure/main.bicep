@@ -1,5 +1,5 @@
 @description('Location resources.')
-param location string = 'westeurope'
+param location string
 
 @description('Specifies a project name that is used to generate the Event Hub name and the Namespace name.')
 param projectName string
