@@ -20,7 +20,7 @@ resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts@2021-01-15' existing = 
   name: cosmosDbName
 }
 
-resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
   properties: {

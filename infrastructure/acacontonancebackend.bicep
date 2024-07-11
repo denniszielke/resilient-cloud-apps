@@ -36,7 +36,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: appInsightsName
 }
 
-resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
   properties: {

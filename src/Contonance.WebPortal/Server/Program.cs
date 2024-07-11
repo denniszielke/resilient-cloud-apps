@@ -46,7 +46,10 @@ builder.Services.AddAzureAppConfiguration();
 builder.Services.AddAzureClients(b =>
 {
     b.AddEventHubProducerClient(builder.Configuration.GetValue<string>("EventHub:EventHubConnectionString"), builder.Configuration.GetValue<string>("EventHub:EventHubName"));
-    b.AddOpenAIClient(new Uri(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiServiceEndpoint")), new AzureKeyCredential(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiKey")));
+    //Added config to enable/disable Azure OpenAI Service DI for demo purposes
+    if (builder.Configuration.GetValue<bool>("AzureOpenAiServiceEnabled")) {
+        b.AddOpenAIClient(new Uri(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiServiceEndpoint")), new AzureKeyCredential(builder.Configuration.GetNoEmptyStringOrThrow("AzureOpenAiKey")));
+    }
 });
 
 builder.Services
