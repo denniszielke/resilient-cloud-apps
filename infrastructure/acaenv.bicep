@@ -10,12 +10,9 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-10
   name: logAnalyticsWorkspaceName
 }
 
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
+resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: containerAppEnvName
   location: location
-  sku: {
-    name: 'Consumption'
-  }
   properties: {
     appLogsConfiguration: {
       destination: 'log-analytics'
@@ -24,6 +21,12 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' 
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }
+    workloadProfiles: [
+      {
+        name: 'Consumption'
+        workloadProfileType: 'Consumption'
+      }
+    ]
   }
 }
 

@@ -42,7 +42,7 @@ resource rule 'Microsoft.EventHub/namespaces/eventhubs/authorizationRules@2022-0
   name: '${eventHubNamespaceName}/${eventHubName}/${eventHubAuthRuleName}'
 }
 
-resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
   properties: {
